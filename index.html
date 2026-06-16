@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Quincenas" />
+<meta name="theme-color" content="#163A3C" />
+<meta name="description" content="Control de gastos e ingresos por quincena" />
+<title>Mis Quincenas 2026</title>
+<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Mis%20Quincenas%202026%22%2C%22short_name%22%3A%22Quincenas%22%2C%22description%22%3A%22Control%20de%20gastos%20e%20ingresos%20por%20quincena%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22background_color%22%3A%22%23FBFAF6%22%2C%22theme_color%22%3A%22%23163A3C%22%2C%22start_url%22%3A%22.%22%2C%22scope%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22512%22%20height%3D%22512%22%20viewBox%3D%220%200%20512%20512%22%3E%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22112%22%20fill%3D%22%23163A3C%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20font-size%3D%22300%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E%26%23x1F4B0%3B%3C%2Ftext%3E%3C%2Fsvg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22512%22%20height%3D%22512%22%20viewBox%3D%220%200%20512%20512%22%3E%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22112%22%20fill%3D%22%23163A3C%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20font-size%3D%22300%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E%26%23x1F4B0%3B%3C%2Ftext%3E%3C%2Fsvg%3E" />
+<style>
+  html,body{margin:0;padding:0;background:#FBFAF6;-webkit-text-size-adjust:100%;overscroll-behavior:none;}
+  #cqroot{min-height:100dvh;}
+  #cq-splash{
+    position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:16px;background:#163A3C;color:#FBFAF6;
+    font-family:system-ui,-apple-system,sans-serif;z-index:999;
+    transition:opacity .4s;
+  }
+  #cq-splash.oculto{opacity:0;pointer-events:none;}
+  #cq-splash span{font-size:56px;}
+  #cq-splash p{font-size:15px;opacity:.7;margin:0;}
+</style>
+
+<script>
+(function(){
+  var NS = "cq2026:";
+  window.storage = {
+    get: function(k){
+      var v = localStorage.getItem(NS+k);
+      return Promise.resolve(v === null ? null : {key:k, value:v});
+    },
+    set: function(k,v,shared){
+      try{ localStorage.setItem(NS+k, v); }catch(e){ console.warn("Storage full",e); }
+      return Promise.resolve({key:k, value:v});
+    },
+    delete: function(k){
+      localStorage.removeItem(NS+k);
+      return Promise.resolve({key:k, deleted:true});
+    },
+    list: function(prefix){
+      var keys=[];
+      for(var i=0;i<localStorage.length;i++){
+        var kk=localStorage.key(i);
+        if(kk&&kk.indexOf(NS)===0){
+          var real=kk.slice(NS.length);
+          if(!prefix||real.indexOf(prefix)===0) keys.push(real);
+        }
+      }
+      return Promise.resolve({keys:keys});
+    }
+  };
+})();
+
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  var swCode = "const CACHE = \"cq2026-v1\";\nconst CDN = [\"https://unpkg.com/@babel/standalone@7.24.7/babel.min.js\",\"https://esm.sh/react@18.2.0\",\"https://esm.sh/react@18.2.0/jsx-runtime\",\"https://esm.sh/react-dom@18.2.0\",\"https://esm.sh/react-dom@18.2.0/client\",\"https://esm.sh/recharts@2.12.7?external=react,react-dom\",\"https://esm.sh/lucide-react@0.383.0?external=react\",\"https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap\"];\n\nself.addEventListener(\"install\", (e) => {\n  self.skipWaiting();\n  e.waitUntil(\n    caches.open(CACHE).then((c) =>\n      Promise.allSettled(CDN.map((u) => c.add(new Request(u, { mode: \"no-cors\" }))))\n    )\n  );\n});\n\nself.addEventListener(\"activate\", (e) => {\n  e.waitUntil(\n    caches.keys().then((keys) =>\n      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))\n    ).then(() => self.clients.claim())\n  );\n});\n\nself.addEventListener(\"fetch\", (e) => {\n  const url = e.request.url;\n\n  if (url.startsWith(\"https://esm.sh/\") || url.startsWith(\"https://unpkg.com/\") || url.startsWith(\"https://fonts.\")) {\n    e.respondWith(\n      caches.match(e.request).then((hit) => {\n        if (hit) return hit;\n        return fetch(e.request).then((res) => {\n          const clone = res.clone();\n          caches.open(CACHE).then((c) => c.put(e.request, clone));\n          return res;\n        }).catch(() => caches.match(e.request));\n      })\n    );\n    return;\n  }\n\n  if (e.request.mode === \"navigate\" || url.endsWith(\".html\") || url.endsWith(\"/\")) {\n    e.respondWith(\n      fetch(e.request).then((res) => {\n        const clone = res.clone();\n        caches.open(CACHE).then((c) => c.put(e.request, clone));\n        return res;\n      }).catch(() => caches.match(e.request))\n    );\n    return;\n  }\n});";
+  var blob = new Blob([swCode], {type:'text/javascript'});
+  var swURL = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swURL, {scope:'./'})
+    .then(function(r){ console.log('[SW] activo, scope:',r.scope); })
+    .catch(function(e){ console.warn('[SW]',e); });
+})();
+</script>
+
+<script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react/jsx-runtime":"https://esm.sh/react@18.2.0/jsx-runtime","react-dom":"https://esm.sh/react-dom@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.7?external=react,react-dom","lucide-react":"https://esm.sh/lucide-react@0.383.0?external=react"}}</script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+</head>
+<body>
+<div id="cq-splash"><span>💰</span><p>Cargando Mis Quincenas…</p></div>
+<div id="cqroot"></div>
+<script type="text/babel" data-type="module" data-presets="react">
+(function(){
+  var s=document.getElementById("cq-splash");
+  if(s){s.classList.add("oculto");setTimeout(function(){s.remove();},450);}
+})();
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import {
+  Wallet, Plus, Trash2, Pencil, Receipt, TrendingUp, TrendingDown,
+  Download, Upload, ChevronLeft, ChevronRight, X, ImagePlus, Calendar,
+  ArrowDownRight, Check, RotateCcw, PiggyBank, Lock, Percent, Sparkles, PlusCircle, HandCoins, UserPlus
+} from "lucide-react";
+import {
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, ReferenceLine
+} from "recharts";
+import { createRoot } from "react-dom/client";
+
+/* ------------------------------------------------------------------ */
+/*  Constantes de calendario 2026                                      */
+/* ------------------------------------------------------------------ */
+const YEAR = 2026;
+const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio",
+  "Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const MESES_CORTO = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const DIAS_SEM = ["dom","lun","mar","mié","jue","vie","sáb"];
+
+const diasDelMes = (y, m0) => new Date(y, m0 + 1, 0).getDate();
+
+function construirQuincenas() {
+  const list = [];
+  for (let m = 0; m < 12; m++) {
+    const dim = diasDelMes(YEAR, m);
+    const mm = String(m + 1).padStart(2, "0");
+    list.push({ key: `q:${YEAR}-${mm}-1`, mes: m, q: 1, dStart: 1, dEnd: 15 });
+    list.push({ key: `q:${YEAR}-${mm}-2`, mes: m, q: 2, dStart: 16, dEnd: dim });
+  }
+  return list;
+}
+const QUINCENAS = construirQuincenas(); // 24 quincenas
+
+function indiceQuincenaHoy() {
+  const hoy = new Date();
+  if (hoy.getFullYear() !== YEAR) return 10; // por defecto: 1a quincena de junio
+  const idx = hoy.getMonth() * 2 + (hoy.getDate() <= 15 ? 0 : 1);
+  return Math.min(idx, QUINCENAS.length - 1);
+}
+
+const CATS_EGRESO = ["Comida","Despensa","Transporte","Servicios","Renta","Salud",
+  "Mascota","Entretenimiento","Compras","Educación","Deudas","Otros"];
+const CATS_INGRESO = ["Extra","Reembolso","Venta","Regalo","Intereses","Otros"];
+
+/* ------------------------------------------------------------------ */
+/*  Capa de almacenamiento persistente (con respaldo en memoria)       */
+/* ------------------------------------------------------------------ */
+const tieneStorage = () => typeof window !== "undefined" && !!window.storage;
+const mem = new Map();
+const pendientes = new Map();
+let flushTimer = null;
+function flushStore() {
+  if (flushTimer) { clearTimeout(flushTimer); flushTimer = null; }
+  if (!tieneStorage()) { return; }
+  for (const [k, v] of pendientes) { try { window.storage.set(k, v, false); } catch {} }
+  pendientes.clear();
+}
+function programarFlush() {
+  if (!tieneStorage()) { pendientes.clear(); return; }
+  if (flushTimer) clearTimeout(flushTimer);
+  flushTimer = setTimeout(flushStore, 450);
+}
+const store = {
+  async get(k) {
+    if (mem.has(k)) return mem.get(k);
+    if (tieneStorage()) {
+      try { const r = await window.storage.get(k); if (r) { mem.set(k, r.value); return r.value; } } catch {}
+    }
+    return null;
+  },
+  set(k, v) { mem.set(k, v); pendientes.set(k, v); programarFlush(); },
+  del(k) {
+    mem.delete(k); pendientes.delete(k);
+    if (tieneStorage()) { try { window.storage.delete(k, false); } catch {} }
+  },
+  async list(prefix) {
+    const set = new Set([...mem.keys()].filter((k) => k.startsWith(prefix)));
+    if (tieneStorage()) {
+      try { const r = await window.storage.list(prefix); if (r && r.keys) r.keys.forEach((k) => set.add(k)); } catch {}
+    }
+    return [...set];
+  },
+};
+
+/* ------------------------------------------------------------------ */
+/*  Utilidades                                                         */
+/* ------------------------------------------------------------------ */
+const mxn = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" });
+const fmt = (n) => mxn.format(Number(n) || 0);
+const idNuevo = () => `m_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+const etiquetaDia = (mes, dia) => {
+  const d = new Date(YEAR, mes, dia).getDay();
+  return `${dia} ${DIAS_SEM[d]}`;
+};
+
+const HOY_REAL = new Date();
+const claveQuincena = (mes, q) => `q:${YEAR}-${String(mes + 1).padStart(2, "0")}-${q}`;
+const fechaISO = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const HOY_ISO = fechaISO(HOY_REAL);
+const sumarDias = (iso, n) => {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d); dt.setDate(dt.getDate() + n);
+  return fechaISO(dt);
+};
+const isoMesDia = (iso) => {
+  if (!iso) return null;
+  const [y, m, d] = iso.split("-").map(Number);
+  if (y !== YEAR) return null;
+  return { mes: m - 1, dia: d };
+};
+const fechaAQuincenaKey = (iso) => {
+  const md = isoMesDia(iso);
+  return md ? claveQuincena(md.mes, md.dia <= 15 ? 1 : 2) : null;
+};
+function calcularRacha(set) {
+  // racha actual: días consecutivos terminando hoy (o ayer si hoy aún no se registra)
+  let actual = 0;
+  let cursor = set.has(HOY_ISO) ? HOY_ISO : (set.has(sumarDias(HOY_ISO, -1)) ? sumarDias(HOY_ISO, -1) : null);
+  while (cursor && set.has(cursor)) { actual++; cursor = sumarDias(cursor, -1); }
+  // mejor racha histórica
+  const arr = [...set].sort();
+  let max = 0, run = 0, prev = null;
+  for (const d of arr) {
+    run = (prev && sumarDias(prev, 1) === d) ? run + 1 : 1;
+    if (run > max) max = run;
+    prev = d;
+  }
+  return { actual, max, total: set.size };
+}
+function etiquetaCuenta(v, cuentas, cajitas) {
+  if (v && v.startsWith("caj:")) {
+    const c = (cajitas || []).find((x) => "caj:" + x.id === v);
+    return (c?.icono || "🔒") + " " + (c ? c.nombre : "Cajita");
+  }
+  const c = (cuentas || []).find((x) => x.id === v);
+  if (c) return (c.icono || "💳") + " " + c.nombre;
+  return v || "";
+}
+
+function archivoADataURL(file, maxDim = 1280, calidad = 0.72) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width >= height && width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
+      else if (height > width && height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
+      const c = document.createElement("canvas");
+      c.width = width; c.height = height;
+      c.getContext("2d").drawImage(img, 0, 0, width, height);
+      resolve(c.toDataURL("image/jpeg", calidad));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+function descargar(nombre, contenido, tipo) {
+  const blob = new Blob([contenido], { type: tipo });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = nombre;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const COLORES_CAT = ["#B5872E","#1E7A5A","#2C7DA0","#A8442C","#6A5ACD","#C9743A",
+  "#3C8C6E","#8A6D3B","#9C5B86","#557A5B","#B5663B","#5B6B7A"];
+
+/* ------------------------------------------------------------------ */
+/*  Componente principal                                               */
+/* ------------------------------------------------------------------ */
+function App() {
+  const [cfg, setCfg] = useState({
+    cuentas: [
+      { id: "efectivo", nombre: "Efectivo", icono: "💵", saldoInicial: 0 },
+      { id: "tarjeta", nombre: "Cuenta principal", icono: "💳", saldoInicial: 0 },
+    ],
+    cuentaNomina: "tarjeta",
+    cajitas: [
+      { id: "aho", nombre: "Ahorro", icono: "🐷", tasa: 6.5, base: 360, saldoInicial: 0, meta: 0, tasasQ: {} },
+      { id: "emg", nombre: "Fondo de emergencia", icono: "🛟", tasa: 6.5, base: 360, saldoInicial: 0, meta: 0, tasasQ: {} },
+    ],
+  });
+  const [qmap, setQmap] = useState({});      // key -> { sueldo, movs:[] }
+  const [cargado, setCargado] = useState(false);
+  const [sel, setSel] = useState(indiceQuincenaHoy());
+  const [vista, setVista] = useState("quincena"); // quincena | anio
+  const [reciboCache, setReciboCache] = useState({}); // id -> dataURL
+  const [reciboModal, setReciboModal] = useState(null); // dataURL en grande
+  const [editId, setEditId] = useState(null);
+  const [diasReg, setDiasReg] = useState([]);
+  const [prestamos, setPrestamos] = useState([]);
+  const [editandoCuentas, setEditandoCuentas] = useState(false);
+  const importRef = useRef(null);
+
+  /* ---- carga inicial ---- */
+  useEffect(() => {
+    (async () => {
+      const c = await store.get("cfg");
+      if (c) {
+        try {
+          const parsed = JSON.parse(c);
+          if (!Array.isArray(parsed.cuentas)) {
+            parsed.cuentas = [
+              { id: "efectivo", nombre: "Efectivo", icono: "💵", saldoInicial: Number(parsed.efectivoInicial) || 0 },
+              { id: "tarjeta", nombre: "Cuenta principal", icono: "💳", saldoInicial: parsed.tarjetaInicial != null ? Number(parsed.tarjetaInicial) : (Number(parsed.saldoInicial) || 0) },
+            ];
+          }
+          if (!parsed.cuentaNomina) parsed.cuentaNomina = "tarjeta";
+          if (!Array.isArray(parsed.cajitas)) {
+            parsed.cajitas = [
+              { id: "aho", nombre: "Ahorro", icono: "🐷", tasa: 6.5, base: 360, saldoInicial: Number(parsed.ahorroInicial) || 0, meta: Number(parsed.meta) || 0, tasasQ: {} },
+              { id: "emg", nombre: "Fondo de emergencia", icono: "🛟", tasa: 6.5, base: 360, saldoInicial: 0, meta: 0, tasasQ: {} },
+            ];
+          }
+          setCfg(parsed);
+        } catch {}
+      }
+      const keys = await store.list("q:");
+      const m = {};
+      for (const k of keys) {
+        const raw = await store.get(k);
+        if (raw) { try { m[k] = JSON.parse(raw); } catch {} }
+      }
+      setQmap(m);
+      const r = await store.get("rachas");
+      if (r) { try { setDiasReg(JSON.parse(r) || []); } catch {} }
+      const p = await store.get("prestamos");
+      if (p) { try { setPrestamos(JSON.parse(p) || []); } catch {} }
+      setCargado(true);
+    })();
+  }, []);
+
+  // asegura que los cambios pendientes se guarden al cerrar o minimizar
+  useEffect(() => {
+    const onHide = () => { if (document.visibilityState === "hidden") flushStore(); };
+    window.addEventListener("pagehide", flushStore);
+    window.addEventListener("beforeunload", flushStore);
+    document.addEventListener("visibilitychange", onHide);
+    return () => {
+      window.removeEventListener("pagehide", flushStore);
+      window.removeEventListener("beforeunload", flushStore);
+      document.removeEventListener("visibilitychange", onHide);
+    };
+  }, []);
+
+  const guardarQuincena = useCallback((key, obj) => {
+    setQmap((prev) => ({ ...prev, [key]: obj }));
+    store.set(key, JSON.stringify(obj));
+  }, []);
+
+  const guardarCfg = useCallback((obj) => {
+    setCfg(obj);
+    store.set("cfg", JSON.stringify(obj));
+  }, []);
+
+  const marcarHoy = useCallback(() => {
+    setDiasReg((prev) => {
+      if (prev.includes(HOY_ISO)) return prev;
+      const next = [...prev, HOY_ISO];
+      store.set("rachas", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const guardarPrestamos = useCallback((arr) => {
+    setPrestamos(arr);
+    store.set("prestamos", JSON.stringify(arr));
+  }, []);
+  const addPrestamo = (p) => guardarPrestamos([...prestamos, { ...p, id: `p_${Date.now().toString(36)}`, creado: Date.now(), abonos: [] }]);
+  const updatePrestamo = (id, patch) => guardarPrestamos(prestamos.map((p) => p.id === id ? { ...p, ...patch } : p));
+  const removePrestamo = (id) => {
+    if (typeof confirm === "function" && !confirm("¿Eliminar este préstamo y sus abonos?")) return;
+    guardarPrestamos(prestamos.filter((p) => p.id !== id));
+  };
+  const addAbono = (id, abono) => guardarPrestamos(prestamos.map((p) => p.id === id
+    ? { ...p, abonos: [...(p.abonos || []), { ...abono, id: `a_${Date.now().toString(36)}` }] } : p));
+  const removeAbono = (id, abonoId) => guardarPrestamos(prestamos.map((p) => p.id === id
+    ? { ...p, abonos: (p.abonos || []).filter((a) => a.id !== abonoId) } : p));
+
+  // efecto de préstamos sobre las CUENTAS, por quincena (sale al prestar, entra al cobrar)
+  const efectoPrestamos = useMemo(() => {
+    const cuentaIds = new Set((cfg.cuentas || []).map((c) => c.id));
+    const out = {}; // key -> { saldos:{id:delta}, prestado, cobrado }
+    const slot = (key) => (out[key] || (out[key] = { saldos: {}, prestado: 0, cobrado: 0 }));
+    for (const p of prestamos) {
+      const monto = Number(p.monto) || 0;
+      const k = fechaAQuincenaKey(p.fecha);
+      if (k) {
+        const s = slot(k); s.prestado += monto;
+        if (cuentaIds.has(p.cuentaOrigen)) s.saldos[p.cuentaOrigen] = (s.saldos[p.cuentaOrigen] || 0) - monto;
+      }
+      for (const ab of p.abonos || []) {
+        const ka = fechaAQuincenaKey(ab.fecha);
+        if (!ka) continue;
+        const a = Number(ab.monto) || 0;
+        const s = slot(ka); s.cobrado += a;
+        if (cuentaIds.has(ab.cuentaDestino)) s.saldos[ab.cuentaDestino] = (s.saldos[ab.cuentaDestino] || 0) + a;
+      }
+    }
+    return out;
+  }, [prestamos, cfg]);
+
+  const totalPorCobrar = useMemo(() =>
+    prestamos.reduce((s, p) => s + ((Number(p.monto) || 0) - (p.abonos || []).reduce((x, a) => x + (Number(a.monto) || 0), 0)), 0),
+    [prestamos]);
+
+  // cuenta donde cae la nómina (con respaldo si la configurada ya no existe)
+  const idNomina = useMemo(() => {
+    const cs = cfg.cuentas || [];
+    if (cfg.cuentaNomina && cs.some((c) => c.id === cfg.cuentaNomina)) return cfg.cuentaNomina;
+    return (cs.find((c) => c.id !== "efectivo") || cs[0] || {}).id;
+  }, [cfg]);
+
+  /* ---- cadena: arrastre + cuentas disponibles definidas por el usuario ---- */
+  const cadena = useMemo(() => {
+    const cuentas = cfg.cuentas || [];
+    const idsValidos = new Set(cuentas.map((c) => c.id));
+    const fallback = cuentas[0]?.id;
+    const suma = (b) => Object.values(b).reduce((s, x) => s + x, 0);
+    const bal = {};
+    cuentas.forEach((c) => { bal[c.id] = Number(c.saldoInicial) || 0; });
+    const out = {};
+    for (const qz of QUINCENAS) {
+      const d = qmap[qz.key] || {};
+      const sueldo = Number(d.sueldo) || 0;
+      const arrastre = suma(bal);
+
+      // la nómina cae en la cuenta configurada
+      const idn = idsValidos.has(idNomina) ? idNomina : fallback;
+      if (idn != null) bal[idn] += sueldo;
+
+      let ing = 0, egr = 0, aCajitas = 0, deCajitas = 0;
+      const aplicar = (id, delta) => {
+        const t = idsValidos.has(id) ? id : fallback;
+        if (t != null) bal[t] += delta;
+      };
+      for (const mv of d.movs || []) {
+        const a = Number(mv.monto) || 0;
+        if (mv.tipo === "ingreso") { ing += a; aplicar(mv.cuenta, a); }
+        else if (mv.tipo === "traspaso") {
+          const ori = mv.cuentaOrigen || "", des = mv.cuentaDestino || "";
+          if (idsValidos.has(ori)) bal[ori] -= a;
+          if (idsValidos.has(des)) bal[des] += a;
+          if (ori.startsWith("caj:")) deCajitas += a;
+          if (des.startsWith("caj:")) aCajitas += a;
+        } else { egr += a; aplicar(mv.cuenta, -a); }
+      }
+
+      const ingresosTot = sueldo + ing;
+      // efecto de préstamos de esta quincena sobre las cuentas
+      const ep = efectoPrestamos[qz.key];
+      if (ep) for (const [id, delta] of Object.entries(ep.saldos)) { if (idsValidos.has(id)) bal[id] += delta; }
+      const saldo = suma(bal);
+      const disponible = saldo + egr;
+      out[qz.key] = {
+        sueldo, ingExtra: ing, egresos: egr, ingresosTot, arrastre,
+        aCajitas, deCajitas, prestado: ep?.prestado || 0, cobrado: ep?.cobrado || 0,
+        saldos: { ...bal }, disponible, saldo,
+      };
+    }
+    return out;
+  }, [qmap, cfg, idNomina, efectoPrestamos]);
+
+  /* ---- simulación diaria de cajitas (rendimiento compuesto) ----
+     Regla Nu: cada día se calcula el rendimiento sobre el saldo al cierre
+     del día anterior y se suma al saldo, generando interés compuesto.
+     rendimiento_diario = saldo * (tasa_anual% / 360)                        */
+  const simCajitas = useMemo(() => {
+    const defs = cfg.cajitas || [];
+    // junta los traspasos por cajita y por fecha (mes-dia)
+    const movPorCaj = {};
+    for (const def of defs) movPorCaj[def.id] = {};
+    for (const qzk of QUINCENAS) {
+      const d = qmap[qzk.key]; if (!d || !d.movs) continue;
+      for (const m of d.movs) {
+        if (m.tipo !== "traspaso") continue;
+        const a = Number(m.monto) || 0;
+        const k = `${qzk.mes}-${m.dia}`;
+        const ori = m.cuentaOrigen || "", des = m.cuentaDestino || "";
+        if (ori.startsWith("caj:")) { const id = ori.slice(4); if (movPorCaj[id]) movPorCaj[id][k] = (movPorCaj[id][k] || 0) - a; }
+        if (des.startsWith("caj:")) { const id = des.slice(4); if (movPorCaj[id]) movPorCaj[id][k] = (movPorCaj[id][k] || 0) + a; }
+      }
+    }
+    // préstamos que salen de / regresan a una cajita
+    for (const p of prestamos) {
+      const md = isoMesDia(p.fecha);
+      if (md && (p.cuentaOrigen || "").startsWith("caj:")) {
+        const id = p.cuentaOrigen.slice(4); const k = `${md.mes}-${md.dia}`;
+        if (movPorCaj[id]) movPorCaj[id][k] = (movPorCaj[id][k] || 0) - (Number(p.monto) || 0);
+      }
+      for (const ab of p.abonos || []) {
+        const mda = isoMesDia(ab.fecha);
+        if (mda && (ab.cuentaDestino || "").startsWith("caj:")) {
+          const id = ab.cuentaDestino.slice(4); const k = `${mda.mes}-${mda.dia}`;
+          if (movPorCaj[id]) movPorCaj[id][k] = (movPorCaj[id][k] || 0) + (Number(ab.monto) || 0);
+        }
+      }
+    }
+    const out = {};
+    for (const def of defs) {
+      const base = Number(def.base) || 360;
+      // tasa efectiva por quincena (índice 0..23), con cambios que se arrastran
+      const ov = def.tasasQ || {};
+      const rateQ = [];
+      let r = Number(def.tasa) || 0;
+      for (let i = 0; i < QUINCENAS.length; i++) { if (ov[i] != null) r = Number(ov[i]); rateQ[i] = r; }
+      let bal = Number(def.saldoInicial) || 0;
+      let interesTotal = 0;
+      const porQuincena = {};
+      for (let mes = 0; mes < 12; mes++) {
+        const dim = diasDelMes(YEAR, mes);
+        for (let dia = 1; dia <= dim; dia++) {
+          const idx = mes * 2 + (dia <= 15 ? 0 : 1);
+          const dr = (rateQ[idx] / 100) / base;
+          let interesHoy = 0;
+          if (new Date(YEAR, mes, dia) <= HOY_REAL) {
+            interesHoy = bal * dr; bal += interesHoy; interesTotal += interesHoy;
+          }
+          const t = movPorCaj[def.id][`${mes}-${dia}`];
+          if (t) bal += t;
+          const key = claveQuincena(mes, dia <= 15 ? 1 : 2);
+          const pq = porQuincena[key] || (porQuincena[key] = { saldo: bal, interes: 0, tasa: rateQ[idx] });
+          pq.interes += interesHoy;
+          pq.tasa = rateQ[idx];
+          if (dia === 15 || dia === dim) pq.saldo = bal;
+        }
+      }
+      out[def.id] = { porQuincena, saldoActual: bal, interesTotal };
+    }
+    return out;
+  }, [qmap, cfg, prestamos]);
+
+  const qz = QUINCENAS[sel];
+  const datos = qmap[qz.key] || { sueldo: 0, movs: [] };
+  const calc = cadena[qz.key];
+
+  // cajitas con su saldo/rendimiento para la quincena seleccionada
+  const cajitasCalc = (cfg.cajitas || []).map((c) => {
+    const s = simCajitas[c.id]?.porQuincena[qz.key];
+    return {
+      ...c,
+      saldo: s ? s.saldo : (Number(c.saldoInicial) || 0),
+      interesQuincena: s ? s.interes : 0,
+      interesTotal: simCajitas[c.id]?.interesTotal || 0,
+      tasaVigente: s ? s.tasa : (Number(c.tasa) || 0),
+    };
+  });
+  const totalCajitas = cajitasCalc.reduce((s, c) => s + c.saldo, 0);
+
+  /* ---- operaciones sobre movimientos ---- */
+  const setSueldo = (valor) => {
+    guardarQuincena(qz.key, { ...datos, sueldo: valor === "" ? 0 : Number(valor) });
+  };
+
+  /* ---- cuentas (configuración) ---- */
+  const updateCuenta = (id, patch) =>
+    guardarCfg({ ...cfg, cuentas: (cfg.cuentas || []).map((c) => c.id === id ? { ...c, ...patch } : c) });
+  const addCuenta = () =>
+    guardarCfg({ ...cfg, cuentas: [...(cfg.cuentas || []), { id: `cu_${Date.now().toString(36)}`, nombre: "Nueva cuenta", icono: "🏦", saldoInicial: 0 }] });
+  const removeCuenta = (id) => {
+    if ((cfg.cuentas || []).length <= 1) { alert("Debes tener al menos una cuenta."); return; }
+    if (typeof confirm === "function" && !confirm("¿Eliminar esta cuenta? Los movimientos hechos en ella se reasignarán a tu primera cuenta.")) return;
+    guardarCfg({ ...cfg, cuentas: (cfg.cuentas || []).filter((c) => c.id !== id) });
+  };
+  const setNomina = (id) => guardarCfg({ ...cfg, cuentaNomina: id });
+
+  /* ---- cajitas (configuración) ---- */
+  const updateCajita = (id, patch) =>
+    guardarCfg({ ...cfg, cajitas: (cfg.cajitas || []).map((c) => c.id === id ? { ...c, ...patch } : c) });
+  const setTasaCajita = (id, valor) => {
+    const v = valor === "" ? 0 : Number(valor);
+    const cajita = (cfg.cajitas || []).find((c) => c.id === id);
+    if (!cajita) return;
+    updateCajita(id, { tasasQ: { ...(cajita.tasasQ || {}), [sel]: v } });
+  };
+  const addCajita = () =>
+    guardarCfg({ ...cfg, cajitas: [...(cfg.cajitas || []), { id: `c_${Date.now().toString(36)}`, nombre: "Nueva cajita", icono: "🔒", tasa: 6.5, base: 360, saldoInicial: 0, meta: 0, tasasQ: {} }] });
+  const removeCajita = (id) => {
+    if (typeof confirm === "function" && !confirm("¿Eliminar esta cajita? Los traspasos hechos hacia ella quedarán sin destino.")) return;
+    guardarCfg({ ...cfg, cajitas: (cfg.cajitas || []).filter((c) => c.id !== id) });
+  };
+  const setCuadreCajita = (id, valor) =>
+    guardarQuincena(qz.key, { ...datos, cuadreCaj: { ...(datos.cuadreCaj || {}), [id]: valor === "" ? null : Number(valor) } });
+
+  const agregarMov = async (mov, file) => {
+    const id = mov.id || idNuevo();
+    let reciboId = mov.recibo || null;
+    if (file) {
+      try {
+        const dataURL = await archivoADataURL(file);
+        reciboId = `recibo:${id}`;
+        await store.set(reciboId, dataURL);
+        setReciboCache((p) => ({ ...p, [id]: dataURL }));
+      } catch { reciboId = mov.recibo || null; }
+    }
+    const nuevo = { ...mov, id, recibo: reciboId, creado: mov.creado || Date.now() };
+    const movs = datos.movs ? [...datos.movs] : [];
+    const i = movs.findIndex((m) => m.id === id);
+    if (i >= 0) movs[i] = nuevo; else movs.push(nuevo);
+    guardarQuincena(qz.key, { ...datos, movs });
+    marcarHoy();
+    setEditId(null);
+  };
+
+  const borrarMov = async (mov) => {
+    if (mov.recibo) await store.del(mov.recibo);
+    guardarQuincena(qz.key, { ...datos, movs: datos.movs.filter((m) => m.id !== mov.id) });
+    if (editId === mov.id) setEditId(null);
+  };
+
+  const verRecibo = async (mov) => {
+    if (reciboCache[mov.id]) { setReciboModal(reciboCache[mov.id]); return; }
+    const data = await store.get(mov.recibo);
+    if (data) { setReciboCache((p) => ({ ...p, [mov.id]: data })); setReciboModal(data); }
+  };
+
+  /* ---- cuadre de caja ---- */
+  const setCuadre = (id, valor) =>
+    guardarQuincena(qz.key, { ...datos, cuadreCuenta: { ...(datos.cuadreCuenta || {}), [id]: valor === "" ? null : Number(valor) } });
+
+  const registrarAjuste = (cuenta, dif) => {
+    if (!dif) return;
+    const hoy = new Date();
+    const diaAjuste = (hoy.getFullYear() === YEAR && hoy.getMonth() === qz.mes &&
+      hoy.getDate() >= qz.dStart && hoy.getDate() <= qz.dEnd) ? hoy.getDate() : qz.dEnd;
+    agregarMov({
+      tipo: dif > 0 ? "ingreso" : "egreso",
+      dia: diaAjuste, concepto: "Ajuste de caja",
+      categoria: "Otros", cuenta, monto: Math.abs(dif),
+      ref: "Diferencia detectada en el cuadre de caja",
+    }, null);
+  };
+
+  /* ---- exportar / importar ---- */
+  const exportarCSV = () => {
+    const cuentaCSV = (m) => m.tipo === "traspaso"
+      ? `${etiquetaCuenta(m.cuentaOrigen, cfg.cuentas, cfg.cajitas)} -> ${etiquetaCuenta(m.cuentaDestino, cfg.cuentas, cfg.cajitas)}`
+      : etiquetaCuenta(m.cuenta, cfg.cuentas, cfg.cajitas);
+    const cab = ["Día","Día semana","Tipo","Concepto","Categoría","Cuenta","Monto","Referencia"];
+    const filas = [...(datos.movs || [])]
+      .sort((a, b) => a.dia - b.dia || a.creado - b.creado)
+      .map((m) => [
+        m.dia,
+        DIAS_SEM[new Date(YEAR, qz.mes, m.dia).getDay()],
+        m.tipo,
+        (m.concepto || "").replace(/"/g, '""'),
+        m.categoria || "",
+        cuentaCSV(m),
+        (m.tipo === "egreso" ? "-" : "") + (Number(m.monto) || 0),
+        (m.ref || "").replace(/"/g, '""').replace(/\n/g, " "),
+      ]);
+    const fila = (lbl, val) => [lbl, "", "", "", "", "", val, ""];
+    const csv = [cab, ...filas].map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const resumen = [
+      [],
+      ["RESUMEN", "", "", "", "", "", "", ""],
+      fila("Arrastre quincena anterior", calc.arrastre),
+      fila("Sueldo (nómina)", calc.sueldo),
+      fila("Ingresos extra", calc.ingExtra),
+      fila("Traído de cajitas", calc.deCajitas),
+      fila("Movido a cajitas", -calc.aCajitas),
+      fila("Egresos", -calc.egresos),
+      fila("Saldo restante (disponible)", calc.saldo),
+      [],
+      ...(cfg.cuentas || []).map((c) => fila(`${c.nombre} (cierre)`, calc.saldos[c.id] || 0)),
+      ...cajitasCalc.map((c) => fila(`${c.nombre} (saldo)`, c.saldo)),
+      ...cajitasCalc.map((c) => fila(`${c.nombre} (rendimiento quincena)`, c.interesQuincena)),
+    ].map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    descargar(`gastos_${YEAR}_${MESES_CORTO[qz.mes]}_Q${qz.q}.csv`, "\uFEFF" + csv + "\n" + resumen, "text/csv;charset=utf-8");
+  };
+
+  const exportarJSON = async () => {
+    const recibos = {};
+    const keys = await store.list("recibo:");
+    for (const k of keys) { const v = await store.get(k); if (v) recibos[k] = v; }
+    const respaldo = { app: "control-quincenas", version: 3, year: YEAR, cfg, quincenas: qmap, recibos, rachas: diasReg, prestamos };
+    descargar(`respaldo_gastos_${YEAR}.json`, JSON.stringify(respaldo), "application/json");
+  };
+
+  const importarJSON = async (file) => {
+    try {
+      const texto = await file.text();
+      const obj = JSON.parse(texto);
+      if (obj.cfg) guardarCfg(obj.cfg);
+      if (obj.quincenas) {
+        for (const [k, v] of Object.entries(obj.quincenas)) await store.set(k, JSON.stringify(v));
+        setQmap(obj.quincenas);
+      }
+      if (obj.recibos) for (const [k, v] of Object.entries(obj.recibos)) await store.set(k, v);
+      if (Array.isArray(obj.rachas)) { setDiasReg(obj.rachas); store.set("rachas", JSON.stringify(obj.rachas)); }
+      if (Array.isArray(obj.prestamos)) guardarPrestamos(obj.prestamos);
+      flushStore();
+      setReciboCache({});
+    } catch { alert("No se pudo leer el respaldo. Verifica que sea el archivo JSON correcto."); }
+  };
+
+  /* ---- datos para gráficas ---- */
+  const desgloseEgresos = useMemo(() => {
+    const map = {};
+    for (const m of datos.movs || []) {
+      if (m.tipo !== "egreso") continue;
+      const c = m.categoria || "Otros";
+      map[c] = (map[c] || 0) + (Number(m.monto) || 0);
+    }
+    return Object.entries(map).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [datos]);
+
+  const serieAnual = useMemo(() =>
+    QUINCENAS.map((q, i) => ({
+      etq: `${MESES_CORTO[q.mes]} Q${q.q}`,
+      mes: q.mes, q: q.q,
+      saldo: Math.round((cadena[q.key]?.saldo || 0) * 100) / 100,
+      egresos: Math.round((cadena[q.key]?.egresos || 0) * 100) / 100,
+      idx: i,
+    })), [cadena]);
+
+  const movsOrdenados = useMemo(() =>
+    [...(datos.movs || [])].sort((a, b) => a.dia - b.dia || (a.creado || 0) - (b.creado || 0)),
+    [datos]);
+
+  const movsPorDia = useMemo(() => {
+    const map = {};
+    for (const m of movsOrdenados) { (map[m.dia] ||= []).push(m); }
+    return Object.entries(map).map(([dia, items]) => ({ dia: Number(dia), items }))
+      .sort((a, b) => a.dia - b.dia);
+  }, [movsOrdenados]);
+
+  const pctGastado = calc && calc.disponible > 0
+    ? Math.min(100, Math.round((calc.egresos / calc.disponible) * 100)) : 0;
+
+  const racha = useMemo(() => calcularRacha(new Set(diasReg)), [diasReg]);
+  const ultimos7 = useMemo(() => {
+    const set = new Set(diasReg);
+    const out = [];
+    for (let i = 6; i >= 0; i--) {
+      const iso = sumarDias(HOY_ISO, -i);
+      const [y, m, d] = iso.split("-").map(Number);
+      out.push({ iso, activo: set.has(iso), letra: DIAS_SEM[new Date(y, m - 1, d).getDay()][0].toUpperCase() });
+    }
+    return out;
+  }, [diasReg]);
+  const hoyRegistrado = diasReg.includes(HOY_ISO);
+
+  /* ---------------------------------------------------------------- */
+  return (
+    <div className="cq-root">
+      <style>{CSS}</style>
+
+      {/* ====================== Encabezado ====================== */}
+      <header className="cq-top">
+        <div className="cq-brand">
+          <div className="cq-logo"><Wallet size={20} /></div>
+          <div>
+            <div className="cq-title">Mis quincenas</div>
+            <div className="cq-sub">Control de gastos e ingresos · {YEAR}</div>
+          </div>
+        </div>
+        <div className="cq-tools">
+          <button className="cq-ghost" onClick={exportarCSV} title="Descargar esta quincena en CSV">
+            <Download size={15} /> CSV
+          </button>
+          <button className="cq-ghost" onClick={exportarJSON} title="Respaldar todo el año (incluye comprobantes)">
+            <Download size={15} /> Respaldo
+          </button>
+          <button className="cq-ghost" onClick={() => importRef.current?.click()} title="Restaurar desde un respaldo">
+            <Upload size={15} /> Restaurar
+          </button>
+          <input ref={importRef} type="file" accept="application/json" style={{ display: "none" }}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) importarJSON(f); e.target.value = ""; }} />
+        </div>
+      </header>
+
+      {/* ====================== Navegación de quincena ====================== */}
+      <nav className="cq-nav">
+        <button className="cq-arrow" disabled={sel === 0} onClick={() => setSel((s) => Math.max(0, s - 1))}>
+          <ChevronLeft size={18} />
+        </button>
+        <div className="cq-period">
+          <div className="cq-period-mes">
+            <Calendar size={15} />
+            <select value={qz.mes} onChange={(e) => {
+              const nm = Number(e.target.value); setSel(QUINCENAS.findIndex((x) => x.mes === nm && x.q === qz.q));
+            }}>
+              {MESES.map((m, i) => <option key={i} value={i}>{m}</option>)}
+            </select>
+          </div>
+          <div className="cq-period-q">
+            <button className={qz.q === 1 ? "on" : ""}
+              onClick={() => setSel(QUINCENAS.findIndex((x) => x.mes === qz.mes && x.q === 1))}>
+              1ª <span>1–15</span>
+            </button>
+            <button className={qz.q === 2 ? "on" : ""}
+              onClick={() => setSel(QUINCENAS.findIndex((x) => x.mes === qz.mes && x.q === 2))}>
+              2ª <span>16–{diasDelMes(YEAR, qz.mes)}</span>
+            </button>
+          </div>
+        </div>
+        <button className="cq-arrow" disabled={sel === QUINCENAS.length - 1} onClick={() => setSel((s) => Math.min(QUINCENAS.length - 1, s + 1))}>
+          <ChevronRight size={18} />
+        </button>
+      </nav>
+
+      <div className="cq-tabs">
+        <button className={vista === "quincena" ? "on" : ""} onClick={() => setVista("quincena")}>Esta quincena</button>
+        <button className={vista === "prestamos" ? "on" : ""} onClick={() => setVista("prestamos")}>
+          Me deben{totalPorCobrar > 0 ? ` · ${fmt(totalPorCobrar)}` : ""}
+        </button>
+        <button className={vista === "anio" ? "on" : ""} onClick={() => setVista("anio")}>Resumen del año</button>
+      </div>
+
+      {!cargado ? (
+        <div className="cq-empty">Cargando tus datos…</div>
+      ) : vista === "prestamos" ? (
+        <VistaPrestamos
+          prestamos={prestamos} cuentas={cfg.cuentas} cajitas={cfg.cajitas}
+          totalPorCobrar={totalPorCobrar}
+          addPrestamo={addPrestamo} updatePrestamo={updatePrestamo} removePrestamo={removePrestamo}
+          addAbono={addAbono} removeAbono={removeAbono} />
+      ) : vista === "anio" ? (
+        <VistaAnual serie={serieAnual} cadena={cadena} cfg={cfg} guardarCfg={guardarCfg}
+          cajitasCierre={(cfg.cajitas || []).reduce((s, c) => s + (simCajitas[c.id]?.saldoActual || Number(c.saldoInicial) || 0), 0)}
+          rendimientoAnual={(cfg.cajitas || []).reduce((s, c) => s + (simCajitas[c.id]?.interesTotal || 0), 0)}
+          updateCuenta={updateCuenta} addCuenta={addCuenta} removeCuenta={removeCuenta} setNomina={setNomina} idNomina={idNomina}
+          porCobrar={totalPorCobrar}
+          irA={(i) => { setSel(i); setVista("quincena"); }} />
+      ) : (
+        <main className="cq-main">
+          {/* ---------- Racha ---------- */}
+          <section className="cq-racha">
+            <div className="cq-racha-fuego">
+              <span className={"cq-flama " + (racha.actual > 0 ? "on" : "")}>🔥</span>
+              <div className="cq-racha-num">
+                <strong>{racha.actual}</strong>
+                <small>{racha.actual === 1 ? "día seguido" : "días seguidos"}</small>
+              </div>
+            </div>
+            <div className="cq-racha-7">
+              {ultimos7.map((d) => (
+                <div key={d.iso} className={"cq-racha-dot " + (d.activo ? "on" : "") + (d.iso === HOY_ISO ? " hoy" : "")}>
+                  <span>{d.letra}</span>
+                </div>
+              ))}
+            </div>
+            <div className="cq-racha-side">
+              <div className="cq-racha-meta">
+                <span>Mejor: <strong>{racha.max}</strong></span>
+                <span>Total: <strong>{racha.total}</strong></span>
+              </div>
+              {!hoyRegistrado && (
+                <button className="cq-racha-btn" onClick={marcarHoy}><Check size={14} /> Registrar hoy</button>
+              )}
+            </div>
+          </section>
+
+          {/* ---------- Tarjeta resumen ---------- */}
+          <section className="cq-hero">
+            <div className="cq-hero-left">
+              <div className="cq-stamp-label">Te queda esta quincena</div>
+              <div className={"cq-stamp " + (calc.saldo < 0 ? "neg" : "")}>{fmt(calc.saldo)}</div>
+              <div className="cq-cuentas">
+                {(cfg.cuentas || []).map((c) => (
+                  <div className="cq-cuenta" key={c.id}>
+                    <span className="cq-cuenta-ic">{c.icono || "💳"}</span>
+                    <div><small>{c.nombre}</small><strong className={(calc.saldos[c.id] || 0) < 0 ? "neg" : ""}>{fmt(calc.saldos[c.id] || 0)}</strong></div>
+                  </div>
+                ))}
+                <button className="cq-cuenta-editar" onClick={() => setEditandoCuentas((v) => !v)}>
+                  <Pencil size={13} /> {editandoCuentas ? "Listo" : "Editar / agregar cuentas"}
+                </button>
+              </div>
+              {calc.arrastre !== 0 && (
+                <div className="cq-arrastre">
+                  <RotateCcw size={13} />
+                  Viene de la quincena anterior: <strong>{fmt(calc.arrastre)}</strong>
+                </div>
+              )}
+              {calc.aCajitas > 0 && (
+                <div className="cq-arrastre">
+                  <Lock size={13} />
+                  Movido a cajitas: <strong>{fmt(calc.aCajitas)}</strong>
+                </div>
+              )}
+              {calc.deCajitas > 0 && (
+                <div className="cq-arrastre">
+                  <ArrowDownRight size={13} />
+                  Traído de cajitas: <strong>+{fmt(calc.deCajitas)}</strong>
+                </div>
+              )}
+              {calc.prestado > 0 && (
+                <div className="cq-arrastre">
+                  <ArrowDownRight size={13} style={{ transform: "scaleY(-1)" }} />
+                  Prestado a alguien: <strong>{fmt(calc.prestado)}</strong>
+                </div>
+              )}
+              {calc.cobrado > 0 && (
+                <div className="cq-arrastre">
+                  <ArrowDownRight size={13} />
+                  Te pagaron: <strong>+{fmt(calc.cobrado)}</strong>
+                </div>
+              )}
+              <div className="cq-bar">
+                <div className="cq-bar-track">
+                  <div className={"cq-bar-fill " + (pctGastado >= 100 ? "full" : "")} style={{ width: pctGastado + "%" }} />
+                </div>
+                <span>{pctGastado}% gastado de {fmt(calc.disponible)} disponible</span>
+              </div>
+            </div>
+
+            <div className="cq-hero-right">
+              <label className="cq-field cq-sueldo">
+                <span>Sueldo de esta quincena</span>
+                <div className="cq-money-cuenta">
+                  <div className="cq-money-in">
+                    <em>$</em>
+                    <input type="number" inputMode="decimal" min="0" placeholder="0.00"
+                      value={datos.sueldo || ""} onChange={(e) => setSueldo(e.target.value)} />
+                  </div>
+                  <select value={idNomina} onChange={(e) => setNomina(e.target.value)} title="¿En qué cuenta cae tu nómina?">
+                    {(cfg.cuentas || []).map((c) => <option key={c.id} value={c.id}>{(c.icono || "💳") + " " + c.nombre}</option>)}
+                  </select>
+                </div>
+                <small>Cae en la cuenta elegida. Puede variar cada quincena.</small>
+              </label>
+
+              <div className="cq-mini-grid">
+                <div className="cq-mini pos">
+                  <TrendingUp size={15} />
+                  <div><span>Ingresos</span><strong>{fmt(calc.ingresosTot)}</strong></div>
+                </div>
+                <div className="cq-mini neg">
+                  <TrendingDown size={15} />
+                  <div><span>Egresos</span><strong>{fmt(calc.egresos)}</strong></div>
+                </div>
+                {calc.ingExtra > 0 && (
+                  <div className="cq-mini extra">
+                    <Plus size={15} />
+                    <div><span>Ingresos extra</span><strong>{fmt(calc.ingExtra)}</strong></div>
+                  </div>
+                )}
+                {totalCajitas !== 0 && (
+                  <div className="cq-mini caj">
+                    <Lock size={15} />
+                    <div><span>En cajitas (aparte)</span><strong>{fmt(totalCajitas)}</strong></div>
+                  </div>
+                )}
+                {totalPorCobrar > 0 && (
+                  <div className="cq-mini deben">
+                    <HandCoins size={15} />
+                    <div><span>Te deben</span><strong>{fmt(totalPorCobrar)}</strong></div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {editandoCuentas && (
+            <CuentasEditor cuentas={cfg.cuentas} updateCuenta={updateCuenta} addCuenta={addCuenta}
+              removeCuenta={removeCuenta} idNomina={idNomina} setNomina={setNomina} mostrarNomina={true}
+              titulo="Editar cuentas" sub="Renombra, cambia el ícono, pon el saldo actual o agrega otra tarjeta/cuenta" />
+          )}
+
+          {/* ---------- Cajitas ---------- */}
+          <section className="cq-card cq-cajitas">
+            <div className="cq-list-head">
+              <h3>🔒 Cajitas</h3>
+              <span>Dinero apartado, fuera de lo disponible · genera rendimiento</span>
+            </div>
+            <div className="cq-caj-grid">
+              {cajitasCalc.map((c) => {
+                const pct = Number(c.meta) > 0 ? Math.min(100, (c.saldo / c.meta) * 100) : 0;
+                return (
+                  <div className="cq-caj" key={c.id}>
+                    <div className="cq-caj-top">
+                      <input className="cq-caj-ic" value={c.icono || "🔒"} maxLength={2}
+                        onChange={(e) => updateCajita(c.id, { icono: e.target.value })} title="Ícono" />
+                      <input className="cq-caj-nombre" value={c.nombre}
+                        onChange={(e) => updateCajita(c.id, { nombre: e.target.value })} />
+                      <button className="cq-caj-del" onClick={() => removeCajita(c.id)} title="Eliminar cajita"><Trash2 size={14} /></button>
+                    </div>
+                    <div className={"cq-caj-saldo " + (c.saldo < 0 ? "neg" : "")}>{fmt(c.saldo)}</div>
+                    <div className="cq-caj-rend">
+                      <Sparkles size={13} /> Rendimiento: <strong>{fmt(c.interesQuincena)}</strong> esta quincena
+                      <span className="cq-caj-rendtot">· {fmt(c.interesTotal)} en el año</span>
+                    </div>
+                    <div className="cq-caj-fields">
+                      <label className="cq-field cq-caj-tasa">
+                        <span>Rendimiento anual</span>
+                        <div className="cq-pct-in">
+                          <input type="number" inputMode="decimal" step="0.01" min="0" placeholder="0.00"
+                            value={c.tasaVigente ?? ""} onChange={(e) => setTasaCajita(c.id, e.target.value)} />
+                          <em><Percent size={13} /></em>
+                        </div>
+                      </label>
+                      <label className="cq-field cq-caj-tasa">
+                        <span>Base de cálculo</span>
+                        <select value={c.base || 360} onChange={(e) => updateCajita(c.id, { base: Number(e.target.value) })}>
+                          <option value={360}>360 días</option>
+                          <option value={365}>365 días</option>
+                        </select>
+                      </label>
+                      <label className="cq-field cq-caj-tasa">
+                        <span>Saldo inicial</span>
+                        <div className="cq-money-in">
+                          <em>$</em>
+                          <input type="number" inputMode="decimal" placeholder="0.00"
+                            value={c.saldoInicial || ""} onChange={(e) => updateCajita(c.id, { saldoInicial: e.target.value === "" ? 0 : Number(e.target.value) })} />
+                        </div>
+                      </label>
+                      <label className="cq-field cq-caj-tasa">
+                        <span>Meta <em className="opt">(opcional)</em></span>
+                        <div className="cq-money-in">
+                          <em>$</em>
+                          <input type="number" inputMode="decimal" placeholder="0.00"
+                            value={c.meta || ""} onChange={(e) => updateCajita(c.id, { meta: e.target.value === "" ? 0 : Number(e.target.value) })} />
+                        </div>
+                      </label>
+                    </div>
+                    <small className="cq-mut cq-caj-hint">La tasa aplica desde esta quincena ({MESES_CORTO[qz.mes]} {qz.q}ª) en adelante, por si tu banco la cambia.</small>
+                    {Number(c.meta) > 0 && (
+                      <div className="cq-meta">
+                        <div className="cq-meta-track">
+                          <div className={"cq-meta-fill " + (c.saldo >= c.meta ? "done" : "")} style={{ width: Math.max(0, pct) + "%" }} />
+                        </div>
+                        <small className="cq-mut">{c.saldo >= c.meta ? "¡Meta cumplida! 🎉" : `${Math.round(pct)}% · faltan ${fmt(c.meta - c.saldo)}`}</small>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="cq-caj-foot">
+              <button className="cq-ghost" onClick={addCajita}><PlusCircle size={15} /> Agregar cajita</button>
+              <span className="cq-mut">Para mover dinero usa un <strong>Traspaso</strong> (abajo) entre una cuenta y la cajita. El rendimiento se calcula solo cada día sobre el saldo del día anterior, compuesto.</span>
+            </div>
+          </section>
+
+          <Formulario
+            key={editId || "nuevo"}
+            qz={qz}
+            cuentas={cfg.cuentas}
+            cajitas={cfg.cajitas}
+            inicial={editId ? (datos.movs || []).find((m) => m.id === editId) : null}
+            onGuardar={agregarMov}
+            onCancelar={() => setEditId(null)}
+          />
+
+          {/* ---------- Lista de movimientos ---------- */}
+          <section className="cq-list">
+            <div className="cq-list-head">
+              <h3>Movimientos</h3>
+              <span>{(datos.movs || []).length} registro{(datos.movs || []).length === 1 ? "" : "s"}</span>
+            </div>
+
+            {movsPorDia.length === 0 ? (
+              <div className="cq-empty">
+                Aún no registras nada en esta quincena. Agrega tu primer gasto o ingreso arriba ☝️
+              </div>
+            ) : (
+              movsPorDia.map(({ dia, items }) => {
+                const subt = items.reduce((s, m) =>
+                  s + (m.tipo === "traspaso" ? 0 : (m.tipo === "egreso" ? -1 : 1) * (Number(m.monto) || 0)), 0);
+                return (
+                  <div className="cq-day" key={dia}>
+                    <div className="cq-day-head">
+                      <span className="cq-day-num">{dia}</span>
+                      <span className="cq-day-sem">{DIAS_SEM[new Date(YEAR, qz.mes, dia).getDay()]}. {MESES[qz.mes]}</span>
+                      <span className={"cq-day-sub " + (subt < 0 ? "neg" : "pos")}>
+                        {subt >= 0 ? "+" : ""}{fmt(subt)}
+                      </span>
+                    </div>
+                    {items.map((m) => (
+                      <div className={"cq-mov " + m.tipo} key={m.id}>
+                        <div className="cq-mov-dot" />
+                        <div className="cq-mov-body">
+                          <div className="cq-mov-top">
+                            <span className="cq-mov-concepto">{m.concepto || "(sin concepto)"}</span>
+                            <span className={"cq-mov-monto " + m.tipo}>
+                              {m.tipo === "egreso" ? "−" : m.tipo === "ingreso" ? "+" : ""}{fmt(m.monto)}
+                            </span>
+                          </div>
+                          <div className="cq-mov-meta">
+                            {m.tipo === "traspaso" ? (
+                              <span className="cq-chip cuenta">
+                                {etiquetaCuenta(m.cuentaOrigen, cfg.cuentas, cfg.cajitas)} → {etiquetaCuenta(m.cuentaDestino, cfg.cuentas, cfg.cajitas)}
+                              </span>
+                            ) : (
+                              <span className="cq-chip cuenta">
+                                {etiquetaCuenta(m.cuenta, cfg.cuentas, cfg.cajitas)}
+                              </span>
+                            )}
+                            {m.categoria && <span className="cq-chip">{m.categoria}</span>}
+                            {m.ref && <span className="cq-ref">{m.ref}</span>}
+                            {m.recibo && (
+                              <button className="cq-link" onClick={() => verRecibo(m)}>
+                                <Receipt size={12} /> Ver comprobante
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="cq-mov-actions">
+                          <button onClick={() => { setEditId(m.id); window.scrollTo({ top: 0, behavior: "smooth" }); }} title="Editar"><Pencil size={14} /></button>
+                          <button onClick={() => borrarMov(m)} title="Eliminar"><Trash2 size={14} /></button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })
+            )}
+          </section>
+
+          {/* ---------- Cuadre de caja ---------- */}
+          <section className="cq-card cq-cuadre">
+            <div className="cq-list-head">
+              <h3>⚖️ Cuadre de caja</h3>
+              <span>¿Lo registrado coincide con la realidad?</span>
+            </div>
+            <div className="cq-cuadre-grid">
+              {(cfg.cuentas || []).map((cuenta) => {
+                const app = calc.saldos[cuenta.id] || 0;
+                const real = (datos.cuadreCuenta || {})[cuenta.id];
+                const tieneReal = real !== null && real !== undefined && real !== "";
+                const dif = tieneReal ? (Number(real) - app) : 0;
+                const cuadra = tieneReal && Math.abs(dif) < 0.005;
+                return (
+                  <div className="cq-cuadre-box" key={cuenta.id}>
+                    <div className="cq-cuadre-h"><span className="cq-cuenta-ic">{cuenta.icono || "💳"}</span>{cuenta.nombre}</div>
+                    <div className="cq-cuadre-row"><span>Según la app</span><strong className={app < 0 ? "neg" : ""}>{fmt(app)}</strong></div>
+                    <label className="cq-field">
+                      <span>Saldo real</span>
+                      <div className="cq-money-in">
+                        <em>$</em>
+                        <input type="number" inputMode="decimal" placeholder="0.00"
+                          value={tieneReal ? real : ""} onChange={(e) => setCuadre(cuenta.id, e.target.value)} />
+                      </div>
+                    </label>
+                    {tieneReal && (cuadra ? (
+                      <div className="cq-cuadre-ok"><Check size={14} /> ¡Cuadra perfecto!</div>
+                    ) : (
+                      <div className="cq-cuadre-dif">
+                        <div className={dif > 0 ? "cq-dif pos" : "cq-dif neg"}>
+                          <strong>{dif > 0 ? `Sobran ${fmt(dif)}` : `Faltan ${fmt(-dif)}`}</strong>
+                          <small>{dif > 0 ? "Quizá un ingreso sin registrar." : "Quizá un gasto que no anotaste."}</small>
+                        </div>
+                        <button className="cq-ghost" onClick={() => registrarAjuste(cuenta.id, dif)}>
+                          Registrar ajuste de {fmt(Math.abs(dif))}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+              {cajitasCalc.map((c) => {
+                const real = (datos.cuadreCaj || {})[c.id];
+                const tieneReal = real !== null && real !== undefined && real !== "";
+                const dif = tieneReal ? (Number(real) - c.saldo) : 0;
+                const cuadra = tieneReal && Math.abs(dif) < 0.01;
+                return (
+                  <div className="cq-cuadre-box" key={"caj-" + c.id}>
+                    <div className="cq-cuadre-h"><span className="cq-cuenta-ic">🔒</span>{c.nombre}</div>
+                    <div className="cq-cuadre-row"><span>Según la app</span><strong className={c.saldo < 0 ? "neg" : ""}>{fmt(c.saldo)}</strong></div>
+                    <label className="cq-field">
+                      <span>Saldo real en el banco</span>
+                      <div className="cq-money-in">
+                        <em>$</em>
+                        <input type="number" inputMode="decimal" placeholder="0.00"
+                          value={tieneReal ? real : ""} onChange={(e) => setCuadreCajita(c.id, e.target.value)} />
+                      </div>
+                    </label>
+                    {tieneReal && (cuadra ? (
+                      <div className="cq-cuadre-ok"><Check size={14} /> ¡Cuadra perfecto!</div>
+                    ) : (
+                      <div className="cq-cuadre-dif">
+                        <div className={dif > 0 ? "cq-dif pos" : "cq-dif neg"}>
+                          <strong>{dif > 0 ? `Sobran ${fmt(dif)}` : `Faltan ${fmt(-dif)}`}</strong>
+                          <small>Ajusta el % de rendimiento o revisa los traspasos para que cuadre.</small>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* ---------- Desglose ---------- */}
+          {desgloseEgresos.length > 0 && (
+            <section className="cq-card cq-desglose">
+              <h3>¿En qué se fue el dinero?</h3>
+              <div className="cq-desglose-grid">
+                <div className="cq-pie">
+                  <ResponsiveContainer width="100%" height={220}>
+                    <PieChart>
+                      <Pie data={desgloseEgresos} dataKey="value" nameKey="name" cx="50%" cy="50%"
+                        innerRadius={52} outerRadius={88} paddingAngle={2} stroke="none">
+                        {desgloseEgresos.map((e, i) => <Cell key={i} fill={COLORES_CAT[i % COLORES_CAT.length]} />)}
+                      </Pie>
+                      <Tooltip formatter={(v) => fmt(v)} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <ul className="cq-leyenda">
+                  {desgloseEgresos.map((e, i) => (
+                    <li key={e.name}>
+                      <span className="dot" style={{ background: COLORES_CAT[i % COLORES_CAT.length] }} />
+                      <span className="nm">{e.name}</span>
+                      <span className="vl">{fmt(e.value)}</span>
+                      <span className="pc">{Math.round((e.value / calc.egresos) * 100)}%</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
+        </main>
+      )}
+
+      {/* ====================== Modal comprobante ====================== */}
+      {reciboModal && (
+        <div className="cq-modal" onClick={() => setReciboModal(null)}>
+          <div className="cq-modal-box" onClick={(e) => e.stopPropagation()}>
+            <button className="cq-modal-x" onClick={() => setReciboModal(null)}><X size={18} /></button>
+            <img src={reciboModal} alt="Comprobante" />
+          </div>
+        </div>
+      )}
+
+      <footer className="cq-foot">
+        {tieneStorage()
+          ? "Tus datos se guardan en este dispositivo y persisten entre sesiones. Usa “Respaldo” para llevártelos a otro lado."
+          : "Modo temporal: el almacenamiento persistente no está disponible aquí, los datos vivirán solo durante esta sesión."}
+      </footer>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Formulario de movimiento                                           */
+/* ------------------------------------------------------------------ */
+function Formulario({ qz, inicial, onGuardar, onCancelar, cuentas, cajitas }) {
+  const hoy = new Date();
+  const diaHoy = (hoy.getFullYear() === YEAR && hoy.getMonth() === qz.mes &&
+    hoy.getDate() >= qz.dStart && hoy.getDate() <= qz.dEnd) ? hoy.getDate() : qz.dStart;
+
+  const cs = cuentas || [];
+  const idCuenta0 = cs[0]?.id || "tarjeta";
+  const idCuenta1 = cs[1]?.id || cs[0]?.id || "efectivo";
+
+  const [tipo, setTipo] = useState(inicial?.tipo || "egreso");
+  const [dia, setDia] = useState(inicial?.dia || diaHoy);
+  const [concepto, setConcepto] = useState(inicial?.concepto || "");
+  const [categoria, setCategoria] = useState(inicial?.categoria || "");
+  const [monto, setMonto] = useState(inicial?.monto != null ? String(inicial.monto) : "");
+  const [ref, setRef] = useState(inicial?.ref || "");
+  const [cuenta, setCuenta] = useState(inicial?.cuenta || idCuenta0);
+  const [cuentaOrigen, setCuentaOrigen] = useState(inicial?.cuentaOrigen || idCuenta0);
+  const [cuentaDestino, setCuentaDestino] = useState(inicial?.cuentaDestino || (cajitas?.[0] ? `caj:${cajitas[0].id}` : idCuenta1));
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const fileRef = useRef(null);
+
+  const cats = tipo === "egreso" ? CATS_EGRESO : CATS_INGRESO;
+  const esTraspaso = tipo === "traspaso";
+  const opcionesCuenta = [
+    ...cs.map((c) => ({ v: c.id, t: `${c.icono || "💳"} ${c.nombre}` })),
+    ...(cajitas || []).map((c) => ({ v: `caj:${c.id}`, t: `${c.icono || "🔒"} ${c.nombre}` })),
+  ];
+  const dias = [];
+  for (let d = qz.dStart; d <= qz.dEnd; d++) dias.push(d);
+
+  // si origen y destino coinciden en un traspaso, mueve el destino a otra opción
+  const fijarOrigen = (v) => {
+    setCuentaOrigen(v);
+    if (v === cuentaDestino) { const otra = opcionesCuenta.find((o) => o.v !== v); if (otra) setCuentaDestino(otra.v); }
+  };
+
+  const onFile = async (f) => {
+    setFile(f);
+    if (f) {
+      try { setPreview(await archivoADataURL(f, 400, 0.6)); } catch { setPreview(null); }
+    } else setPreview(null);
+  };
+
+  const conceptoTraspaso = () => {
+    const limpio = (v) => etiquetaCuenta(v, cs, cajitas).replace(/^\S+\s/, "");
+    if (cuentaDestino.startsWith("caj:")) return `Apartado a ${limpio(cuentaDestino)}`;
+    if (cuentaOrigen.startsWith("caj:")) return `Retiro de ${limpio(cuentaOrigen)}`;
+    return `Traspaso a ${limpio(cuentaDestino)}`;
+  };
+
+  const enviar = () => {
+    if (!monto || Number(monto) <= 0) { alert("Escribe un monto mayor a cero."); return; }
+    if (esTraspaso) {
+      if (cuentaOrigen === cuentaDestino) { alert("El traspaso debe ser entre cuentas distintas."); return; }
+      onGuardar({
+        id: inicial?.id, creado: inicial?.creado, recibo: inicial?.recibo || null,
+        tipo: "traspaso", dia: Number(dia),
+        concepto: concepto.trim() || conceptoTraspaso(),
+        cuentaOrigen, cuentaDestino, monto: Number(monto), ref: ref.trim(),
+      }, file);
+    } else {
+      if (!concepto.trim()) { alert("Ponle un concepto para reconocerlo después."); return; }
+      onGuardar({
+        id: inicial?.id, creado: inicial?.creado, recibo: inicial?.recibo || null,
+        tipo, dia: Number(dia), concepto: concepto.trim(),
+        categoria: categoria || (tipo === "egreso" ? "Otros" : "Extra"),
+        cuenta, monto: Number(monto), ref: ref.trim(),
+      }, file);
+    }
+    if (!inicial) {
+      setConcepto(""); setMonto(""); setRef(""); setCategoria("");
+      setFile(null); setPreview(null); if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  return (
+    <section className="cq-card cq-form">
+      <div className="cq-form-head">
+        <h3>{inicial ? "Editar movimiento" : "Nuevo movimiento"}</h3>
+        <div className="cq-toggle">
+          <button className={tipo === "egreso" ? "on egreso" : ""} onClick={() => setTipo("egreso")}>
+            <TrendingDown size={14} /> Gasto
+          </button>
+          <button className={tipo === "ingreso" ? "on ingreso" : ""} onClick={() => setTipo("ingreso")}>
+            <TrendingUp size={14} /> Ingreso
+          </button>
+          <button className={tipo === "traspaso" ? "on traspaso" : ""} onClick={() => setTipo("traspaso")}>
+            <ArrowDownRight size={14} /> Traspaso
+          </button>
+        </div>
+      </div>
+
+      <div className="cq-form-grid">
+        <label className="cq-field">
+          <span>Día</span>
+          <select value={dia} onChange={(e) => setDia(Number(e.target.value))}>
+            {dias.map((d) => <option key={d} value={d}>{etiquetaDia(qz.mes, d)}</option>)}
+          </select>
+        </label>
+
+        <label className="cq-field cq-field-monto">
+          <span>Monto</span>
+          <div className="cq-money-in">
+            <em>$</em>
+            <input type="number" inputMode="decimal" min="0" placeholder="0.00"
+              value={monto} onChange={(e) => setMonto(e.target.value)} />
+          </div>
+        </label>
+
+        <label className="cq-field cq-field-wide">
+          <span>Concepto {esTraspaso && <em className="opt">(opcional)</em>}</span>
+          <input type="text"
+            placeholder={esTraspaso ? "Ej. Retiro en cajero" : (tipo === "egreso" ? "Ej. Súper de la semana" : "Ej. Pago de freelance")}
+            value={concepto} onChange={(e) => setConcepto(e.target.value)} />
+        </label>
+
+        {esTraspaso ? (
+          <>
+            <label className="cq-field">
+              <span>Desde</span>
+              <select value={cuentaOrigen} onChange={(e) => fijarOrigen(e.target.value)}>
+                {opcionesCuenta.map((o) => <option key={o.v} value={o.v}>{o.t}</option>)}
+              </select>
+            </label>
+            <label className="cq-field">
+              <span>Hacia</span>
+              <select value={cuentaDestino} onChange={(e) => setCuentaDestino(e.target.value)}>
+                {opcionesCuenta.map((o) => <option key={o.v} value={o.v}>{o.t}</option>)}
+              </select>
+            </label>
+          </>
+        ) : (
+          <>
+            <label className="cq-field">
+              <span>Categoría</span>
+              <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+                <option value="">— elegir —</option>
+                {cats.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </label>
+            <label className="cq-field">
+              <span>{tipo === "egreso" ? "Pagué con" : "Entró a"}</span>
+              <select value={cuenta} onChange={(e) => setCuenta(e.target.value)}>
+                {cs.map((c) => <option key={c.id} value={c.id}>{(c.icono || "💳") + " " + c.nombre}</option>)}
+              </select>
+            </label>
+          </>
+        )}
+
+        <label className="cq-field cq-field-wide">
+          <span>Referencia / nota <em className="opt">(opcional)</em></span>
+          <textarea rows={2} placeholder="Detalle para reconocer el gasto: tienda, motivo, a quién, etc."
+            value={ref} onChange={(e) => setRef(e.target.value)} />
+        </label>
+
+        <div className="cq-field cq-field-wide">
+          <span>Comprobante <em className="opt">(opcional, foto)</em></span>
+          <div className="cq-file-row">
+            <button type="button" className="cq-file-btn" onClick={() => fileRef.current?.click()}>
+              <ImagePlus size={15} /> {file || inicial?.recibo ? "Cambiar foto" : "Subir foto"}
+            </button>
+            {(preview || (inicial?.recibo && !file)) && (
+              <span className="cq-file-tag"><Check size={13} /> {file ? file.name : "Comprobante guardado"}</span>
+            )}
+            {preview && <img className="cq-file-prev" src={preview} alt="vista previa" />}
+            <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }}
+              onChange={(e) => onFile(e.target.files?.[0] || null)} />
+          </div>
+        </div>
+      </div>
+
+      <div className="cq-form-foot">
+        {inicial && <button className="cq-ghost" onClick={onCancelar}>Cancelar</button>}
+        <button className="cq-primary" onClick={enviar}>
+          {inicial ? <><Check size={16} /> Guardar cambios</> : <><Plus size={16} /> Agregar movimiento</>}
+        </button>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Vista anual                                                        */
+/* ------------------------------------------------------------------ */
+function VistaAnual({ serie, cadena, cfg, guardarCfg, cajitasCierre, rendimientoAnual, updateCuenta, addCuenta, removeCuenta, setNomina, idNomina, porCobrar, irA }) {
+  const totalEgresos = serie.reduce((s, x) => s + x.egresos, 0);
+  const ultima = cadena[QUINCENAS[QUINCENAS.length - 1].key] || {};
+  const saldoFinal = ultima.saldo || 0;
+
+  return (
+    <main className="cq-main">
+      <CuentasEditor cuentas={cfg.cuentas} updateCuenta={updateCuenta} addCuenta={addCuenta}
+        removeCuenta={removeCuenta} idNomina={idNomina} setNomina={setNomina} mostrarNomina={true} />
+
+      <section className="cq-card">
+        <h3 className="cq-anio-sub" style={{ marginTop: 0 }}>Disponible por quincena</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={serie} margin={{ top: 10, right: 8, left: 0, bottom: 30 }}
+            onClick={(e) => { if (e && e.activeTooltipIndex != null) irA(e.activeTooltipIndex); }}>
+            <CartesianGrid vertical={false} stroke="#EAE6DC" />
+            <XAxis dataKey="etq" tick={{ fontSize: 10, fill: "#737A72" }} interval={0} angle={-45} textAnchor="end" height={50} />
+            <YAxis tick={{ fontSize: 11, fill: "#737A72" }} tickFormatter={(v) => "$" + (v / 1000).toFixed(0) + "k"} width={48} />
+            <Tooltip formatter={(v) => fmt(v)} cursor={{ fill: "rgba(181,135,46,.08)" }} />
+            <ReferenceLine y={0} stroke="#163A3C" />
+            <Bar dataKey="saldo" radius={[3, 3, 0, 0]}>
+              {serie.map((d, i) => <Cell key={i} fill={d.saldo < 0 ? "#A8442C" : "#1E7A5A"} cursor="pointer" />)}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+
+        <div className="cq-anio-stats">
+          <div><span>Gasto total del año</span><strong>{fmt(totalEgresos)}</strong></div>
+          <div><span>En cajitas (cierre)</span><strong className="ahr">{fmt(cajitasCierre)}</strong></div>
+          <div><span>Rendimiento del año</span><strong className="pos">{fmt(rendimientoAnual)}</strong></div>
+          {porCobrar > 0 && <div><span>Te deben (por cobrar)</span><strong className="ahr">{fmt(porCobrar)}</strong></div>}
+          <div><span>Disponible al cierre</span><strong className={saldoFinal < 0 ? "neg" : "pos"}>{fmt(saldoFinal)}</strong></div>
+        </div>
+      </section>
+
+      <section className="cq-card">
+        <h3>Detalle por quincena</h3>
+        <div className="cq-tabla">
+          <div className="cq-tr cq-th">
+            <span>Periodo</span><span>Arrastre</span><span>Ingresos</span><span>Egresos</span><span>A cajitas</span><span>Restante</span>
+          </div>
+          {QUINCENAS.map((q, i) => {
+            const c = cadena[q.key];
+            const netoCaj = (c.aCajitas || 0) - (c.deCajitas || 0);
+            return (
+              <button className="cq-tr" key={q.key} onClick={() => irA(i)}>
+                <span className="cq-tr-per">{MESES_CORTO[q.mes]} · {q.q}ª</span>
+                <span className="cq-mut">{fmt(c.arrastre)}</span>
+                <span className="pos">{fmt(c.ingresosTot)}</span>
+                <span className="neg">{fmt(c.egresos)}</span>
+                <span className="ahr">{netoCaj !== 0 ? fmt(netoCaj) : "—"}</span>
+                <span className={c.saldo < 0 ? "neg b" : "pos b"}>{fmt(c.saldo)}</span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Editor de cuentas (reutilizable)                                   */
+/* ------------------------------------------------------------------ */
+function CuentasEditor({ cuentas, updateCuenta, addCuenta, removeCuenta, idNomina, setNomina, mostrarNomina, titulo, sub }) {
+  const ICONOS = ["💳", "💵", "🏦", "📱", "💰", "🪙", "🏧", "🐷", "🪪", "💶", "🏠", "🧾"];
+  return (
+    <section className="cq-card">
+      <div className="cq-list-head">
+        <h3>{titulo || "Tus cuentas"}</h3>
+        <span>{sub || "Renombra, personaliza el ícono o agrega tus tarjetas y cuentas"}</span>
+      </div>
+      {mostrarNomina && (
+        <label className="cq-field cq-nomina" style={{ marginBottom: 12 }}>
+          <span>Mi sueldo cae en</span>
+          <select value={idNomina} onChange={(e) => setNomina(e.target.value)}>
+            {(cuentas || []).map((c) => <option key={c.id} value={c.id}>{(c.icono || "💳") + " " + c.nombre}</option>)}
+          </select>
+        </label>
+      )}
+      <div className="cq-cuentas-edit">
+        {(cuentas || []).map((c) => (
+          <div className="cq-cuenta-edit" key={c.id}>
+            <select className="cq-cuenta-ic-sel" value={c.icono || "💳"} onChange={(e) => updateCuenta(c.id, { icono: e.target.value })}>
+              {ICONOS.concat(ICONOS.includes(c.icono) ? [] : [c.icono]).map((ic) => <option key={ic} value={ic}>{ic}</option>)}
+            </select>
+            <input className="cq-cuenta-nombre" value={c.nombre} placeholder="Nombre (BBVA, Nu, Mercado Pago…)"
+              onChange={(e) => updateCuenta(c.id, { nombre: e.target.value })} />
+            <div className="cq-money-in cq-cuenta-saldo">
+              <em>$</em>
+              <input type="number" inputMode="decimal" placeholder="Saldo actual"
+                value={c.saldoInicial || ""} onChange={(e) => updateCuenta(c.id, { saldoInicial: e.target.value === "" ? 0 : Number(e.target.value) })} />
+            </div>
+            <button className="cq-caj-del" onClick={() => removeCuenta(c.id)} title="Eliminar cuenta"><Trash2 size={14} /></button>
+          </div>
+        ))}
+        <button className="cq-ghost" onClick={addCuenta}><PlusCircle size={15} /> Agregar cuenta o tarjeta</button>
+      </div>
+      <small className="cq-mut" style={{ display: "block", marginTop: 10 }}>
+        El saldo es lo que tienes ahora en cada cuenta. Todas las cuentas suman a tu total disponible.
+      </small>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Vista de préstamos (me deben)                                      */
+/* ------------------------------------------------------------------ */
+function VistaPrestamos({ prestamos, cuentas, cajitas, totalPorCobrar, addPrestamo, updatePrestamo, removePrestamo, addAbono, removeAbono }) {
+  const cs = cuentas || [];
+  const opciones = [
+    ...cs.map((c) => ({ v: c.id, t: `${c.icono || "💳"} ${c.nombre}` })),
+    ...(cajitas || []).map((c) => ({ v: `caj:${c.id}`, t: `${c.icono || "🔒"} ${c.nombre}` })),
+  ];
+  const [nombre, setNombre] = useState("");
+  const [monto, setMonto] = useState("");
+  const [cuentaOrigen, setCuentaOrigen] = useState(cs[0]?.id || "tarjeta");
+  const [fecha, setFecha] = useState(HOY_ISO);
+  const [nota, setNota] = useState("");
+
+  const crear = () => {
+    if (!nombre.trim()) { alert("¿Quién te debe? Pon un nombre."); return; }
+    if (!monto || Number(monto) <= 0) { alert("Escribe un monto mayor a cero."); return; }
+    addPrestamo({ nombre: nombre.trim(), monto: Number(monto), cuentaOrigen, fecha, nota: nota.trim() });
+    setNombre(""); setMonto(""); setNota("");
+  };
+
+  const ordenados = [...prestamos].sort((a, b) => {
+    const pa = (Number(a.monto) || 0) - (a.abonos || []).reduce((s, x) => s + (Number(x.monto) || 0), 0);
+    const pb = (Number(b.monto) || 0) - (b.abonos || []).reduce((s, x) => s + (Number(x.monto) || 0), 0);
+    return (pb > 0) - (pa > 0) || (b.creado || 0) - (a.creado || 0);
+  });
+
+  return (
+    <main className="cq-main">
+      <section className="cq-hero">
+        <div className="cq-hero-left" style={{ background: "linear-gradient(160deg,#2C3A2C,#163A3C)" }}>
+          <div className="cq-stamp-label">En total te deben</div>
+          <div className="cq-stamp">{fmt(totalPorCobrar)}</div>
+          <div className="cq-bar"><span>{prestamos.filter((p) => (Number(p.monto) || 0) - (p.abonos || []).reduce((s, x) => s + (Number(x.monto) || 0), 0) > 0.005).length} préstamo(s) pendiente(s) de {prestamos.length} registrado(s)</span></div>
+        </div>
+        <div className="cq-hero-right">
+          <h3>Registrar préstamo</h3>
+          <div className="cq-form-grid">
+            <label className="cq-field cq-field-wide">
+              <span>¿Quién te debe?</span>
+              <input type="text" placeholder="Ej. Mi primo Beto" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+            </label>
+            <label className="cq-field">
+              <span>Monto</span>
+              <div className="cq-money-in"><em>$</em>
+                <input type="number" inputMode="decimal" min="0" placeholder="0.00" value={monto} onChange={(e) => setMonto(e.target.value)} /></div>
+            </label>
+            <label className="cq-field">
+              <span>Salió de</span>
+              <select value={cuentaOrigen} onChange={(e) => setCuentaOrigen(e.target.value)}>
+                {opciones.map((o) => <option key={o.v} value={o.v}>{o.t}</option>)}
+              </select>
+            </label>
+            <label className="cq-field">
+              <span>Fecha</span>
+              <input type="date" min={`${YEAR}-01-01`} max={`${YEAR}-12-31`} value={fecha} onChange={(e) => setFecha(e.target.value)} />
+            </label>
+            <label className="cq-field cq-field-wide">
+              <span>Nota <em className="opt">(opcional)</em></span>
+              <input type="text" placeholder="Para qué fue, cuándo lo devuelve, etc." value={nota} onChange={(e) => setNota(e.target.value)} />
+            </label>
+          </div>
+          <div className="cq-form-foot">
+            <button className="cq-primary" onClick={crear}><UserPlus size={16} /> Agregar préstamo</button>
+          </div>
+        </div>
+      </section>
+
+      {ordenados.length === 0 ? (
+        <div className="cq-empty">Nadie te debe (o nadie registrado todavía 😄). Agrega un préstamo arriba.</div>
+      ) : ordenados.map((p) => (
+        <LoanCard key={p.id} p={p} cuentas={cs} cajitas={cajitas} opciones={opciones}
+          updatePrestamo={updatePrestamo} removePrestamo={removePrestamo} addAbono={addAbono} removeAbono={removeAbono} />
+      ))}
+    </main>
+  );
+}
+
+function LoanCard({ p, cuentas, cajitas, opciones, updatePrestamo, removePrestamo, addAbono, removeAbono }) {
+  const pagado = (p.abonos || []).reduce((s, a) => s + (Number(a.monto) || 0), 0);
+  const monto = Number(p.monto) || 0;
+  const pendiente = monto - pagado;
+  const saldado = pendiente <= 0.005;
+  const pct = monto > 0 ? Math.min(100, (pagado / monto) * 100) : 0;
+  const [abrir, setAbrir] = useState(false);
+  const [aMonto, setAMonto] = useState("");
+  const [aCuenta, setACuenta] = useState(p.cuentaOrigen || (cuentas[0]?.id) || "tarjeta");
+  const [aFecha, setAFecha] = useState(HOY_ISO);
+  const [editar, setEditar] = useState(false);
+
+  const registrar = () => {
+    const v = aMonto === "" ? pendiente : Number(aMonto);
+    if (!v || v <= 0) { alert("Escribe un monto válido."); return; }
+    addAbono(p.id, { monto: v, cuentaDestino: aCuenta, fecha: aFecha });
+    setAMonto(""); setAbrir(false);
+  };
+
+  return (
+    <section className={"cq-card cq-loan " + (saldado ? "saldado" : "")}>
+      <div className="cq-loan-head">
+        {editar ? (
+          <input className="cq-caj-nombre" value={p.nombre} onChange={(e) => updatePrestamo(p.id, { nombre: e.target.value })} />
+        ) : (
+          <div className="cq-loan-name"><HandCoins size={17} /> <strong>{p.nombre}</strong></div>
+        )}
+        <div className="cq-loan-actions">
+          <button onClick={() => setEditar((v) => !v)} title="Editar"><Pencil size={14} /></button>
+          <button onClick={() => removePrestamo(p.id)} title="Eliminar"><Trash2 size={14} /></button>
+        </div>
+      </div>
+
+      <div className="cq-loan-amounts">
+        <div><span>Te debe</span><strong className={saldado ? "pos" : "neg"}>{fmt(pendiente < 0 ? 0 : pendiente)}</strong></div>
+        <div><span>Original</span><strong>{fmt(monto)}</strong></div>
+        <div><span>Pagado</span><strong className="pos">{fmt(pagado)}</strong></div>
+      </div>
+      <div className="cq-meta-track"><div className={"cq-meta-fill " + (saldado ? "done" : "")} style={{ width: pct + "%" }} /></div>
+
+      {editar && (
+        <div className="cq-form-grid" style={{ marginTop: 12 }}>
+          <label className="cq-field"><span>Monto original</span>
+            <div className="cq-money-in"><em>$</em>
+              <input type="number" inputMode="decimal" value={p.monto || ""} onChange={(e) => updatePrestamo(p.id, { monto: e.target.value === "" ? 0 : Number(e.target.value) })} /></div>
+          </label>
+          <label className="cq-field"><span>Salió de</span>
+            <select value={p.cuentaOrigen} onChange={(e) => updatePrestamo(p.id, { cuentaOrigen: e.target.value })}>
+              {opciones.map((o) => <option key={o.v} value={o.v}>{o.t}</option>)}
+            </select>
+          </label>
+          <label className="cq-field"><span>Fecha</span>
+            <input type="date" min={`${YEAR}-01-01`} max={`${YEAR}-12-31`} value={p.fecha || ""} onChange={(e) => updatePrestamo(p.id, { fecha: e.target.value })} />
+          </label>
+          <label className="cq-field cq-field-wide"><span>Nota</span>
+            <input type="text" value={p.nota || ""} onChange={(e) => updatePrestamo(p.id, { nota: e.target.value })} />
+          </label>
+        </div>
+      )}
+
+      <div className="cq-loan-meta">
+        <span className="cq-chip cuenta">{etiquetaCuenta(p.cuentaOrigen, cuentas, cajitas)}</span>
+        {p.fecha && <span className="cq-ref">Prestado el {p.fecha}</span>}
+        {p.nota && <span className="cq-ref">· {p.nota}</span>}
+      </div>
+
+      {(p.abonos || []).length > 0 && (
+        <div className="cq-abonos">
+          {p.abonos.map((a) => (
+            <div className="cq-abono" key={a.id}>
+              <Check size={12} />
+              <span>{fmt(a.monto)} → {etiquetaCuenta(a.cuentaDestino, cuentas, cajitas)}</span>
+              <span className="cq-ref">{a.fecha}</span>
+              <button onClick={() => removeAbono(p.id, a.id)} title="Quitar abono"><X size={12} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!saldado && (abrir ? (
+        <div className="cq-abono-form">
+          <label className="cq-field"><span>Abono</span>
+            <div className="cq-money-in"><em>$</em>
+              <input type="number" inputMode="decimal" placeholder={pendiente.toFixed(2)} value={aMonto} onChange={(e) => setAMonto(e.target.value)} /></div>
+          </label>
+          <label className="cq-field"><span>Entra a</span>
+            <select value={aCuenta} onChange={(e) => setACuenta(e.target.value)}>
+              {opciones.map((o) => <option key={o.v} value={o.v}>{o.t}</option>)}
+            </select>
+          </label>
+          <label className="cq-field"><span>Fecha</span>
+            <input type="date" min={`${YEAR}-01-01`} max={`${YEAR}-12-31`} value={aFecha} onChange={(e) => setAFecha(e.target.value)} />
+          </label>
+          <div className="cq-abono-btns">
+            <button className="cq-ghost" onClick={() => setAbrir(false)}>Cancelar</button>
+            <button className="cq-primary" onClick={registrar}><Check size={15} /> Guardar abono</button>
+          </div>
+        </div>
+      ) : (
+        <button className="cq-ghost cq-loan-add" onClick={() => { setAMonto(""); setAbrir(true); }}>
+          <Plus size={15} /> Registrar abono / pago
+        </button>
+      ))}
+      {saldado && <div className="cq-cuadre-ok"><Check size={14} /> Saldado por completo 🎉</div>}
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Estilos                                                            */
+/* ------------------------------------------------------------------ */
+const CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap');
+
+.cq-root{
+  --paper:#FBFAF6; --card:#FFFFFF; --ink:#163A3C; --ink2:#2C5658;
+  --line:#E7E3D8; --muted:#737A72; --accent:#B5872E;
+  --pos:#1E7A5A; --pos-bg:#E8F1EC; --neg:#A8442C; --neg-bg:#F7EAE4;
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  color:var(--ink); background:var(--paper);
+  min-height:100vh; max-width:920px; margin:0 auto; padding:0 16px 60px;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+.cq-root *{box-sizing:border-box;min-width:0;}
+.cq-root h3{font-family:'Bricolage Grotesque',sans-serif; font-weight:700; margin:0; font-size:1.02rem; letter-spacing:-.01em;}
+.cq-root .num,.cq-stamp,.cq-mov-monto,.cq-mini strong,.cq-money-in input,.cq-tr span{font-variant-numeric:tabular-nums;}
+
+/* encabezado */
+.cq-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:18px 0 14px;}
+.cq-brand{display:flex;align-items:center;gap:11px;}
+.cq-logo{width:38px;height:38px;border-radius:11px;background:var(--ink);color:#FBFAF6;display:grid;place-items:center;}
+.cq-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.18rem;letter-spacing:-.02em;line-height:1;}
+.cq-sub{font-size:.74rem;color:var(--muted);margin-top:3px;}
+.cq-tools{display:flex;gap:7px;flex-wrap:wrap;}
+.cq-ghost{display:inline-flex;align-items:center;gap:5px;font-size:.76rem;font-weight:600;color:var(--ink2);
+  background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 10px;cursor:pointer;transition:.15s;}
+.cq-ghost:hover{border-color:var(--accent);color:var(--accent);}
+
+/* navegación */
+.cq-nav{display:flex;align-items:center;gap:10px;background:var(--ink);border-radius:15px;padding:10px 12px;margin-bottom:10px;}
+.cq-arrow{width:34px;height:34px;border-radius:9px;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer;display:grid;place-items:center;transition:.15s;}
+.cq-arrow:hover:not(:disabled){background:rgba(255,255,255,.2);}
+.cq-arrow:disabled{opacity:.3;cursor:default;}
+.cq-period{flex:1;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
+.cq-period-mes{display:flex;align-items:center;gap:6px;color:#fff;}
+.cq-period-mes select{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.15rem;background:transparent;border:none;color:#fff;cursor:pointer;letter-spacing:-.01em;}
+.cq-period-mes select option{color:#163A3C;}
+.cq-period-q{display:flex;gap:5px;background:rgba(255,255,255,.08);padding:4px;border-radius:11px;}
+.cq-period-q button{display:flex;flex-direction:column;align-items:center;line-height:1.1;border:none;background:transparent;color:rgba(255,255,255,.65);font-weight:700;font-size:.84rem;padding:5px 12px;border-radius:8px;cursor:pointer;transition:.15s;}
+.cq-period-q button span{font-size:.62rem;font-weight:500;opacity:.8;}
+.cq-period-q button.on{background:var(--accent);color:#fff;}
+
+/* tabs */
+.cq-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--line);}
+.cq-tabs button{border:none;background:transparent;font-weight:600;font-size:.86rem;color:var(--muted);padding:9px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.cq-tabs button.on{color:var(--ink);border-bottom-color:var(--accent);}
+
+.cq-main{display:flex;flex-direction:column;gap:16px;}
+
+/* racha */
+.cq-racha{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#1B2B2C,#163A3C);border-radius:16px;padding:14px 18px;color:#fff;flex-wrap:wrap;}
+.cq-racha-fuego{display:flex;align-items:center;gap:10px;}
+.cq-flama{font-size:1.7rem;filter:grayscale(1);opacity:.5;transition:.2s;}
+.cq-flama.on{filter:none;opacity:1;}
+.cq-racha-num{display:flex;flex-direction:column;line-height:1;}
+.cq-racha-num strong{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.9rem;}
+.cq-racha-num small{font-size:.72rem;color:rgba(255,255,255,.65);}
+.cq-racha-7{display:flex;gap:6px;flex:1;justify-content:center;}
+.cq-racha-dot{width:28px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:grid;place-items:center;border:1px solid transparent;}
+.cq-racha-dot span{font-size:.68rem;color:rgba(255,255,255,.45);font-weight:700;}
+.cq-racha-dot.on{background:var(--accent);}
+.cq-racha-dot.on span{color:#fff;}
+.cq-racha-dot.hoy{border-color:rgba(255,255,255,.5);}
+.cq-racha-side{display:flex;align-items:center;gap:14px;}
+.cq-racha-meta{display:flex;flex-direction:column;gap:2px;font-size:.74rem;color:rgba(255,255,255,.7);}
+.cq-racha-meta strong{color:#fff;}
+.cq-racha-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:.8rem;padding:9px 13px;cursor:pointer;white-space:nowrap;}
+.cq-racha-btn:hover{filter:brightness(.95);}
+.cq-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;}
+
+/* hero */
+.cq-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:0;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+.cq-hero-left{padding:22px;background:linear-gradient(160deg,#163A3C,#0F2B2C);color:#fff;}
+.cq-stamp-label{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.6);}
+.cq-stamp{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:2.6rem;line-height:1.05;margin-top:4px;letter-spacing:-.02em;}
+.cq-stamp.neg{color:#F2A58E;}
+.cq-arrastre{display:flex;align-items:center;gap:6px;font-size:.78rem;color:rgba(255,255,255,.78);margin-top:8px;}
+.cq-arrastre strong{color:#fff;}
+.cq-bar{margin-top:16px;}
+.cq-bar-track{height:8px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden;}
+.cq-bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .4s;}
+.cq-bar-fill.full{background:#F2A58E;}
+.cq-bar span{display:block;font-size:.72rem;color:rgba(255,255,255,.7);margin-top:7px;}
+.cq-hero-right{padding:22px;display:flex;flex-direction:column;gap:16px;}
+
+.cq-field{display:flex;flex-direction:column;gap:5px;}
+.cq-field>span{font-size:.76rem;font-weight:600;color:var(--ink2);}
+.cq-field .opt{font-weight:400;color:var(--muted);font-style:normal;}
+.cq-field small{font-size:.7rem;color:var(--muted);}
+.cq-field input,.cq-field select,.cq-field textarea{font-family:inherit;font-size:.92rem;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;outline:none;transition:.15s;}
+.cq-field input:focus,.cq-field select:focus,.cq-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(181,135,46,.12);}
+.cq-field textarea{resize:vertical;}
+.cq-money-in{position:relative;display:flex;align-items:center;}
+.cq-money-in em{position:absolute;left:11px;font-style:normal;color:var(--muted);font-weight:600;}
+.cq-money-in input{padding-left:24px;font-weight:600;}
+.cq-sueldo input{font-size:1.25rem;font-weight:700;}
+
+.cq-mini-grid{display:flex;flex-direction:column;gap:9px;}
+.cq-mini{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:11px;border:1px solid var(--line);}
+.cq-mini div{display:flex;flex-direction:column;line-height:1.2;}
+.cq-mini span{font-size:.72rem;color:var(--muted);}
+.cq-mini strong{font-size:1.05rem;font-weight:700;}
+.cq-mini.pos{background:var(--pos-bg);border-color:#CFE5D8;color:var(--pos);}
+.cq-mini.neg{background:var(--neg-bg);border-color:#EBD2C7;color:var(--neg);}
+.cq-mini.extra{background:#FBF3E3;border-color:#EBDCBB;color:var(--accent);}
+
+/* formulario */
+.cq-form-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.cq-toggle{display:flex;gap:4px;background:#F2EFE7;padding:4px;border-radius:11px;}
+.cq-toggle button{display:flex;align-items:center;gap:5px;border:none;background:transparent;font-weight:600;font-size:.82rem;color:var(--muted);padding:7px 13px;border-radius:8px;cursor:pointer;}
+.cq-toggle button.on.egreso{background:var(--neg);color:#fff;}
+.cq-toggle button.on.ingreso{background:var(--pos);color:#fff;}
+.cq-toggle button.on.traspaso{background:var(--ink2);color:#fff;}
+.cq-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.cq-field-wide{grid-column:1 / -1;}
+.cq-file-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.cq-file-btn{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;color:var(--ink2);background:#fff;border:1px dashed var(--line);border-radius:10px;padding:9px 13px;cursor:pointer;}
+.cq-file-btn:hover{border-color:var(--accent);color:var(--accent);}
+.cq-file-tag{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;color:var(--pos);font-weight:600;}
+.cq-file-prev{height:42px;border-radius:8px;border:1px solid var(--line);}
+.cq-form-foot{display:flex;justify-content:flex-end;gap:9px;margin-top:16px;}
+.cq-primary{display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:#fff;border:none;border-radius:11px;font-weight:700;font-size:.9rem;padding:11px 18px;cursor:pointer;transition:.15s;}
+.cq-primary:hover{filter:brightness(.95);}
+
+/* lista */
+.cq-list-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.cq-list-head h3{font-size:1.05rem;}
+.cq-list-head span{font-size:.78rem;color:var(--muted);}
+.cq-day{margin-top:14px;}
+.cq-day-head{display:flex;align-items:center;gap:9px;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:4px;}
+.cq-day-num{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.15rem;color:var(--ink);min-width:26px;}
+.cq-day-sem{font-size:.76rem;color:var(--muted);text-transform:capitalize;flex:1;}
+.cq-day-sub{font-weight:700;font-size:.9rem;}
+.cq-day-sub.pos{color:var(--pos);} .cq-day-sub.neg{color:var(--neg);}
+.cq-mov{display:flex;align-items:flex-start;gap:11px;padding:11px 4px;border-bottom:1px dashed var(--line);}
+.cq-mov:last-child{border-bottom:none;}
+.cq-mov-dot{width:8px;height:8px;border-radius:99px;margin-top:6px;flex-shrink:0;}
+.cq-mov.egreso .cq-mov-dot{background:var(--neg);} .cq-mov.ingreso .cq-mov-dot{background:var(--pos);}
+.cq-mov.traspaso .cq-mov-dot{background:var(--ink2);}
+.cq-mov.traspaso .cq-mov-monto{color:var(--ink2);}
+.cq-mov-body{flex:1;min-width:0;}
+.cq-mov-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+.cq-mov-concepto{font-weight:600;font-size:.92rem;}
+.cq-mov-monto{font-weight:700;font-size:.95rem;white-space:nowrap;}
+.cq-mov-monto.egreso{color:var(--neg);} .cq-mov-monto.ingreso{color:var(--pos);}
+.cq-mov-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.cq-chip{font-size:.7rem;font-weight:600;color:var(--ink2);background:#F2EFE7;border-radius:99px;padding:2px 9px;}
+.cq-chip.cuenta{background:#EAF1ED;color:var(--ink);}
+.cq-ref{font-size:.78rem;color:var(--muted);}
+.cq-link{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;}
+.cq-mov-actions{display:flex;gap:3px;}
+.cq-mov-actions button{width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;}
+.cq-mov-actions button:hover{background:#F2EFE7;color:var(--ink);}
+
+/* desglose */
+.cq-desglose-grid{display:grid;grid-template-columns:220px 1fr;gap:18px;align-items:center;margin-top:12px;}
+.cq-leyenda{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.cq-leyenda li{display:grid;grid-template-columns:14px 1fr auto auto;align-items:center;gap:9px;font-size:.86rem;}
+.cq-leyenda .dot{width:11px;height:11px;border-radius:3px;}
+.cq-leyenda .nm{color:var(--ink2);}
+.cq-leyenda .vl{font-weight:700;font-variant-numeric:tabular-nums;}
+.cq-leyenda .pc{color:var(--muted);font-size:.76rem;min-width:34px;text-align:right;}
+
+/* ahorro */
+.cq-ahorro{display:flex;flex-direction:column;gap:16px;background:linear-gradient(150deg,#FBF7EE,#FFFFFF);}
+.cq-ahorro-acum{display:flex;align-items:center;gap:14px;}
+.cq-ahorro-ic{width:46px;height:46px;border-radius:13px;background:var(--accent);color:#fff;display:grid;place-items:center;flex-shrink:0;}
+.cq-ahorro-info{display:flex;flex-direction:column;line-height:1.2;}
+.cq-ahorro-info>span{font-size:.76rem;color:var(--muted);font-weight:600;}
+.cq-ahorro-info>strong{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.7rem;letter-spacing:-.02em;color:var(--accent);font-variant-numeric:tabular-nums;}
+.cq-ahorro-info>strong.neg{color:var(--neg);}
+.cq-ahorro-info>small{font-size:.72rem;color:var(--muted);margin-top:2px;}
+.cq-ahorro-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.cq-warn{font-size:.78rem;color:var(--neg);background:var(--neg-bg);border:1px solid #EBD2C7;border-radius:10px;padding:9px 12px;}
+.cq-inicial-row{display:flex;gap:12px;flex-wrap:wrap;}
+.cq-inicial{min-width:150px;flex:1;}
+
+/* meta de ahorro */
+.cq-meta{display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+.cq-meta-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;}
+.cq-meta-field{max-width:200px;flex:1;}
+.cq-meta-num{text-align:right;line-height:1.1;}
+.cq-meta-num strong{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;color:var(--accent);}
+.cq-meta-num small{display:block;font-size:.72rem;color:var(--muted);}
+.cq-meta-track{height:10px;border-radius:99px;background:#EFEADB;overflow:hidden;}
+.cq-meta-fill{height:100%;background:linear-gradient(90deg,#C9A24A,var(--accent));border-radius:99px;transition:width .4s;}
+.cq-meta-fill.done{background:linear-gradient(90deg,#3C8C6E,var(--pos));}
+
+/* mini cajitas */
+.cq-mini.caj{background:#EFEAF6;border-color:#DCD0EB;color:#6A5ACD;}
+.cq-mini.deben{background:#FBEEE6;border-color:#EAD3C0;color:#B5663B;}
+
+/* préstamos */
+.cq-loan{display:flex;flex-direction:column;gap:11px;}
+.cq-loan.saldado{opacity:.78;}
+.cq-loan-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.cq-loan-name{display:flex;align-items:center;gap:8px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;}
+.cq-loan-actions{display:flex;gap:3px;}
+.cq-loan-actions button{width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;}
+.cq-loan-actions button:hover{background:#F2EFE7;color:var(--ink);}
+.cq-loan-amounts{display:flex;gap:18px;}
+.cq-loan-amounts div{display:flex;flex-direction:column;}
+.cq-loan-amounts span{font-size:.72rem;color:var(--muted);}
+.cq-loan-amounts strong{font-size:1.15rem;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums;}
+.cq-loan-amounts .pos{color:var(--pos);} .cq-loan-amounts .neg{color:var(--neg);}
+.cq-loan-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.cq-abonos{display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:9px;}
+.cq-abono{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--ink2);}
+.cq-abono>span:first-of-type{flex:1;}
+.cq-abono button{width:24px;height:24px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-radius:6px;}
+.cq-abono button:hover{background:var(--neg-bg);color:var(--neg);}
+.cq-abono-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;border-top:1px dashed var(--line);padding-top:11px;align-items:end;}
+.cq-abono-btns{grid-column:1 / -1;display:flex;justify-content:flex-end;gap:8px;}
+.cq-loan-add{align-self:flex-start;}
+
+/* sección cajitas */
+.cq-caj-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;}
+.cq-caj{border:1px solid var(--line);border-radius:13px;padding:14px;background:linear-gradient(155deg,#FBF7EE,#fff);display:flex;flex-direction:column;gap:8px;}
+.cq-caj-top{display:flex;align-items:center;gap:8px;}
+.cq-caj-nombre{flex:1;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1rem;color:var(--ink);border:1px solid transparent;background:transparent;border-radius:8px;padding:4px 6px;min-width:0;}
+.cq-caj-nombre:hover,.cq-caj-nombre:focus{border-color:var(--line);background:#fff;outline:none;}
+.cq-caj-del{width:30px;height:30px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;flex-shrink:0;}
+.cq-caj-del:hover{background:var(--neg-bg);color:var(--neg);}
+.cq-caj-saldo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.65rem;letter-spacing:-.02em;color:var(--accent);font-variant-numeric:tabular-nums;}
+.cq-caj-saldo.neg{color:var(--neg);}
+.cq-caj-rend{font-size:.74rem;color:var(--ink2);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.cq-caj-rend strong{color:var(--pos);}
+.cq-caj-rendtot{color:var(--muted);}
+.cq-caj-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+.cq-caj-tasa>span{font-size:.7rem;}
+.cq-pct-in{position:relative;display:flex;align-items:center;}
+.cq-pct-in input{width:100%;font-family:inherit;font-size:.92rem;font-weight:600;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 30px 9px 11px;outline:none;}
+.cq-pct-in input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(181,135,46,.12);}
+.cq-pct-in em{position:absolute;right:9px;color:var(--muted);display:flex;}
+.cq-caj-foot{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap;}
+.cq-caj-foot .cq-mut{flex:1;min-width:220px;font-size:.74rem;}
+.cq-caj-ic{width:36px;text-align:center;font-size:1.1rem;border:1px solid transparent;background:transparent;border-radius:8px;padding:4px 2px;}
+.cq-caj-ic:hover,.cq-caj-ic:focus{border-color:var(--line);background:#fff;outline:none;}
+.cq-caj-hint{display:block;margin-top:6px;}
+
+/* editor de cuentas (vista anual) */
+.cq-nomina{min-width:180px;}
+.cq-cuentas-edit{display:flex;flex-direction:column;gap:9px;margin:6px 0 4px;}
+.cq-cuenta-edit{display:flex;align-items:center;gap:8px;}
+.cq-cuenta-ic-sel{width:54px;font-size:1.05rem;text-align:center;border:1px solid var(--line);border-radius:10px;padding:9px 4px;background:#fff;}
+.cq-cuenta-nombre{flex:1;min-width:0;font-family:inherit;font-weight:600;font-size:.92rem;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;}
+.cq-cuenta-saldo{max-width:160px;}
+.cq-anio-sub{margin-top:6px;}
+
+/* monto + cuenta */
+.cq-money-cuenta{display:flex;gap:8px;flex-wrap:wrap;}
+.cq-money-cuenta .cq-money-in{flex:1 1 140px;min-width:0;}
+.cq-money-cuenta select{flex:1 1 120px;min-width:0;}
+
+/* cuentas en el resumen */
+.cq-cuentas{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.cq-cuenta{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:11px;padding:9px 13px;flex:1 1 130px;min-width:0;}
+.cq-cuenta-ic{font-size:1.15rem;}
+.cq-cuenta div{display:flex;flex-direction:column;line-height:1.2;}
+.cq-cuenta small{font-size:.68rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.04em;}
+.cq-cuenta strong{font-size:1.02rem;font-weight:700;font-variant-numeric:tabular-nums;}
+.cq-cuenta strong.neg{color:#F2A58E;}
+.cq-cuenta-editar{display:inline-flex;align-items:center;justify-content:center;gap:6px;align-self:center;flex:1 1 150px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:11px;padding:10px 13px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;}
+.cq-cuenta-editar:hover{background:rgba(255,255,255,.2);}
+
+
+/* cuadre de caja */
+.cq-cuadre-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;}
+.cq-cuadre-box{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.cq-cuadre-h{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.92rem;}
+.cq-cuadre-row{display:flex;justify-content:space-between;align-items:baseline;font-size:.84rem;color:var(--muted);}
+.cq-cuadre-row strong{font-size:1.05rem;color:var(--ink);font-variant-numeric:tabular-nums;}
+.cq-cuadre-row strong.neg{color:var(--neg);}
+.cq-cuadre-ok{display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:600;color:var(--pos);background:var(--pos-bg);border-radius:9px;padding:9px 11px;}
+.cq-cuadre-dif{display:flex;flex-direction:column;gap:9px;}
+.cq-dif{display:flex;flex-direction:column;border-radius:9px;padding:9px 11px;}
+.cq-dif strong{font-size:.95rem;}
+.cq-dif small{font-size:.72rem;opacity:.85;}
+.cq-dif.pos{background:var(--pos-bg);color:var(--pos);}
+.cq-dif.neg{background:var(--neg-bg);color:var(--neg);}
+.cq-cuadre-dif .cq-ghost{justify-content:center;}
+
+/* vista anual */
+.cq-anio-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:6px;}
+.cq-mut{color:var(--muted);font-size:.8rem;margin:4px 0 0;}
+.cq-inicial{min-width:180px;}
+.cq-anio-stats{display:flex;gap:24px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+.cq-anio-stats div{display:flex;flex-direction:column;}
+.cq-anio-stats span{font-size:.76rem;color:var(--muted);}
+.cq-anio-stats strong{font-size:1.3rem;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;}
+.cq-tabla{display:flex;flex-direction:column;margin-top:10px;}
+.cq-tr{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;gap:8px;align-items:center;text-align:right;padding:9px 8px;border:none;background:transparent;border-bottom:1px solid var(--line);font-size:.82rem;cursor:pointer;font-family:inherit;color:var(--ink);}
+.cq-tr:hover:not(.cq-th){background:#FBF7EE;}
+.cq-tr-per{text-align:left;font-weight:600;}
+.cq-th{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;cursor:default;font-weight:600;}
+.cq-th .cq-tr-per{text-align:left;}
+.cq-tr .pos{color:var(--pos);} .cq-tr .neg{color:var(--neg);} .cq-tr .ahr{color:var(--accent);} .cq-tr .b{font-weight:700;}
+
+.cq-empty{text-align:center;color:var(--muted);font-size:.9rem;padding:30px 16px;border:1px dashed var(--line);border-radius:14px;}
+.cq-foot{text-align:center;font-size:.72rem;color:var(--muted);margin-top:24px;line-height:1.5;}
+
+/* modal */
+.cq-modal{position:fixed;inset:0;background:rgba(15,30,30,.7);display:grid;place-items:center;z-index:50;padding:20px;}
+.cq-modal-box{position:relative;max-width:90vw;max-height:88vh;}
+.cq-modal-box img{max-width:90vw;max-height:88vh;border-radius:12px;display:block;}
+.cq-modal-x{position:absolute;top:-14px;right:-14px;width:34px;height:34px;border-radius:99px;border:none;background:#fff;color:var(--ink);cursor:pointer;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.2);}
+
+@media(max-width:680px){
+  .cq-hero{grid-template-columns:1fr;}
+  .cq-form-grid{grid-template-columns:1fr;}
+  .cq-desglose-grid{grid-template-columns:1fr;}
+  .cq-ahorro-fields{grid-template-columns:1fr;}
+  .cq-cuadre-grid{grid-template-columns:1fr;}
+  .cq-caj-grid{grid-template-columns:1fr;}
+  .cq-caj-fields{grid-template-columns:1fr 1fr;}
+  .cq-racha{gap:12px;}
+  .cq-racha-7{order:3;flex-basis:100%;}
+  .cq-abono-form{grid-template-columns:1fr 1fr;}
+  .cq-loan-amounts{gap:14px;}
+  .cq-stamp{font-size:2.1rem;}
+  .cq-tr{grid-template-columns:1fr 1fr;gap:4px 10px;text-align:left;}
+  .cq-th{display:none;}
+  .cq-tr-per{grid-column:1 / -1;font-size:.9rem;}
+}
+`;
+
+
+createRoot(document.getElementById("cqroot")).render(<App />);
+
+</script>
+</body>
+</html>

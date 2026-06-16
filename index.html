@@ -2,17 +2,17 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Quincenas" />
+<meta name="mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#163A3C" />
 <meta name="description" content="Control de gastos e ingresos por quincena" />
 <title>Mis Quincenas 2026</title>
-<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Mis%20Quincenas%202026%22%2C%22short_name%22%3A%22Quincenas%22%2C%22description%22%3A%22Control%20de%20gastos%20e%20ingresos%20por%20quincena%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22background_color%22%3A%22%23FBFAF6%22%2C%22theme_color%22%3A%22%23163A3C%22%2C%22start_url%22%3A%22.%22%2C%22scope%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D" />
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22512%22%20height%3D%22512%22%20viewBox%3D%220%200%20512%20512%22%3E%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22112%22%20fill%3D%22%23163A3C%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20font-size%3D%22300%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E%26%23x1F4B0%3B%3C%2Ftext%3E%3C%2Fsvg%3E" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22512%22%20height%3D%22512%22%20viewBox%3D%220%200%20512%20512%22%3E%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22112%22%20fill%3D%22%23163A3C%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20font-size%3D%22300%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E%26%23x1F4B0%3B%3C%2Ftext%3E%3C%2Fsvg%3E" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22192%22%20height%3D%22192%22%20viewBox%3D%220%200%20192%20192%22%3E%3Crect%20width%3D%22192%22%20height%3D%22192%22%20rx%3D%2245%22%20fill%3D%22%23163A3C%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-size%3D%22120%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E%F0%9F%92%B0%3C%2Ftext%3E%3C%2Fsvg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22192%22%20height%3D%22192%22%20viewBox%3D%220%200%20192%20192%22%3E%3Crect%20width%3D%22192%22%20height%3D%22192%22%20rx%3D%2245%22%20fill%3D%22%23163A3C%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-size%3D%22120%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E%F0%9F%92%B0%3C%2Ftext%3E%3C%2Fsvg%3E" />
 <style>
   html,body{margin:0;padding:0;background:#FBFAF6;-webkit-text-size-adjust:100%;overscroll-behavior:none;}
   #cqroot{min-height:100dvh;}
@@ -20,11 +20,9 @@
     position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
     justify-content:center;gap:16px;background:#163A3C;color:#FBFAF6;
     font-family:system-ui,-apple-system,sans-serif;z-index:999;
-    transition:opacity .4s;
   }
-  #cq-splash.oculto{opacity:0;pointer-events:none;}
-  #cq-splash span{font-size:56px;}
-  #cq-splash p{font-size:15px;opacity:.7;margin:0;}
+  #cq-splash span{font-size:48px;}
+  #cq-splash p{font-size:14px;opacity:.8;margin:0;}
 </style>
 
 <script>
@@ -35,7 +33,7 @@
       var v = localStorage.getItem(NS+k);
       return Promise.resolve(v === null ? null : {key:k, value:v});
     },
-    set: function(k,v,shared){
+    set: function(k,v){
       try{ localStorage.setItem(NS+k, v); }catch(e){ console.warn("Storage full",e); }
       return Promise.resolve({key:k, value:v});
     },
@@ -59,11 +57,11 @@
 
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var swCode = "const CACHE = \"cq2026-v1\";\nconst CDN = [\"https://unpkg.com/@babel/standalone@7.24.7/babel.min.js\",\"https://esm.sh/react@18.2.0\",\"https://esm.sh/react@18.2.0/jsx-runtime\",\"https://esm.sh/react-dom@18.2.0\",\"https://esm.sh/react-dom@18.2.0/client\",\"https://esm.sh/recharts@2.12.7?external=react,react-dom\",\"https://esm.sh/lucide-react@0.383.0?external=react\",\"https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap\"];\n\nself.addEventListener(\"install\", (e) => {\n  self.skipWaiting();\n  e.waitUntil(\n    caches.open(CACHE).then((c) =>\n      Promise.allSettled(CDN.map((u) => c.add(new Request(u, { mode: \"no-cors\" }))))\n    )\n  );\n});\n\nself.addEventListener(\"activate\", (e) => {\n  e.waitUntil(\n    caches.keys().then((keys) =>\n      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))\n    ).then(() => self.clients.claim())\n  );\n});\n\nself.addEventListener(\"fetch\", (e) => {\n  const url = e.request.url;\n\n  if (url.startsWith(\"https://esm.sh/\") || url.startsWith(\"https://unpkg.com/\") || url.startsWith(\"https://fonts.\")) {\n    e.respondWith(\n      caches.match(e.request).then((hit) => {\n        if (hit) return hit;\n        return fetch(e.request).then((res) => {\n          const clone = res.clone();\n          caches.open(CACHE).then((c) => c.put(e.request, clone));\n          return res;\n        }).catch(() => caches.match(e.request));\n      })\n    );\n    return;\n  }\n\n  if (e.request.mode === \"navigate\" || url.endsWith(\".html\") || url.endsWith(\"/\")) {\n    e.respondWith(\n      fetch(e.request).then((res) => {\n        const clone = res.clone();\n        caches.open(CACHE).then((c) => c.put(e.request, clone));\n        return res;\n      }).catch(() => caches.match(e.request))\n    );\n    return;\n  }\n});";
+  var swCode = "const CACHE = \"cq2026-v1\";\nconst CDN = [\"https://unpkg.com/@babel/standalone@7.24.7/babel.min.js\",\"https://esm.sh/react@18.2.0\",\"https://esm.sh/react@18.2.0/jsx-runtime\",\"https://esm.sh/react-dom@18.2.0\",\"https://esm.sh/react-dom@18.2.0/client\",\"https://esm.sh/recharts@2.12.7?external=react,react-dom\",\"https://esm.sh/lucide-react@0.383.0?external=react\"];\n\nself.addEventListener(\"install\", (e) => {\n  self.skipWaiting();\n  e.waitUntil(\n    caches.open(CACHE).then((c) =>\n      Promise.allSettled(CDN.map((u) => c.add(new Request(u, { mode: \"no-cors\" }))))\n    )\n  );\n});\n\nself.addEventListener(\"activate\", (e) => {\n  e.waitUntil(\n    caches.keys().then((keys) =>\n      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))\n    ).then(() => self.clients.claim())\n  );\n});\n\nself.addEventListener(\"fetch\", (e) => {\n  const url = e.request.url;\n\n  if (url.startsWith(\"https://esm.sh/\") || url.startsWith(\"https://unpkg.com/\")) {\n    e.respondWith(\n      caches.match(e.request).then((hit) => {\n        if (hit) return hit;\n        return fetch(e.request).then((res) => {\n          const clone = res.clone();\n          caches.open(CACHE).then((c) => c.put(e.request, clone));\n          return res;\n        }).catch(() => caches.match(e.request));\n      })\n    );\n    return;\n  }\n\n  if (e.request.mode === \"navigate\" || url.endsWith(\".html\") || url.endsWith(\"/\")) {\n    e.respondWith(\n      fetch(e.request).then((res) => {\n        const clone = res.clone();\n        caches.open(CACHE).then((c) => c.put(e.request, clone));\n        return res;\n      }).catch(() => caches.match(e.request))\n    );\n    return;\n  }\n});";
   var blob = new Blob([swCode], {type:'text/javascript'});
   var swURL = URL.createObjectURL(blob);
   navigator.serviceWorker.register(swURL, {scope:'./'})
-    .then(function(r){ console.log('[SW] activo, scope:',r.scope); })
+    .then(function(r){ console.log('[SW] registrado'); })
     .catch(function(e){ console.warn('[SW]',e); });
 })();
 </script>
@@ -75,10 +73,10 @@
 <div id="cq-splash"><span>💰</span><p>Cargando Mis Quincenas…</p></div>
 <div id="cqroot"></div>
 <script type="text/babel" data-type="module" data-presets="react">
-(function(){
+setTimeout(function(){
   var s=document.getElementById("cq-splash");
-  if(s){s.classList.add("oculto");setTimeout(function(){s.remove();},450);}
-})();
+  if(s) s.style.display="none";
+}, 2000);
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import {
   Wallet, Plus, Trash2, Pencil, Receipt, TrendingUp, TrendingDown,
